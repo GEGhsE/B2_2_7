@@ -1,0 +1,3515 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>🔍 창의 분류 박물관</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
+  <style>
+    @font-face {
+      font-family: 'Cafe24Ssurround';
+      src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_two@1.0/Cafe24Ssurround.woff') format('woff');
+      font-weight: normal;
+      font-style: normal;
+      font-display: swap;
+    }
+  </style>
+  
+  <style>
+    /* ================================================
+     *  STYLES
+     * ================================================ */
+    :root {
+      --c-primary: #6366F1;
+      --c-primary-dark: #4338CA;
+      --c-primary-light: #C7D2FE;
+      --c-accent-pink: #EC4899;
+      --c-accent-yellow: #FBBF24;
+      --c-accent-green: #10B981;
+      --c-accent-orange: #F97316;
+      --c-accent-red: #EF4444;
+      --c-accent-blue: #3B82F6;
+      --c-accent-purple: #8B5CF6;
+      --c-bg: #FEF7FF;
+      --c-text: #1E293B;
+      --c-text-light: #64748B;
+      
+      /* 모든 폰트를 둥글둥글한 Cafe24Ssurround 하나로 통일 */
+      --font-display: 'Cafe24Ssurround', 'Jua', sans-serif;
+      --font-body: 'Cafe24Ssurround', 'Jua', sans-serif;
+      --font-handwrite: 'Cafe24Ssurround', 'Jua', sans-serif;
+      --font-cute: 'Cafe24Ssurround', 'Jua', sans-serif;
+      
+      /* 강조용 형광펜 컬러 */
+      --highlight-yellow: linear-gradient(180deg, transparent 60%, #FEF08A 60%);
+      --highlight-pink: linear-gradient(180deg, transparent 60%, #FBCFE8 60%);
+      --highlight-blue: linear-gradient(180deg, transparent 60%, #BAE6FD 60%);
+      --highlight-green: linear-gradient(180deg, transparent 60%, #BBF7D0 60%);
+      
+      /* === 동적 viewport (JS에서 주입) === */
+      --vw: 100vw;
+      --vh: 100vh;
+      --vmin: 100vmin;
+      --vmax: 100vmax;
+      --1vh: 1vh;
+      --1vw: 1vw;
+      --1vmin: 1vmin;
+      --scale: 1;
+      
+      /* === 글씨 크기 시스템 (모든 곳 일괄 제어) === */
+      /* min을 매우 크게 잡아서 작은 화면에서도 확실히 보이게 */
+      --fs-tiny:    clamp(16px, 2.0vh, 20px);
+      --fs-small:   clamp(18px, 2.4vh, 24px);
+      --fs-base:    clamp(22px, 2.8vh, 28px);
+      --fs-medium:  clamp(26px, 3.2vh, 34px);
+      --fs-large:   clamp(30px, 3.8vh, 40px);
+      --fs-xlarge:  clamp(36px, 4.5vh, 48px);
+      --fs-huge:    clamp(42px, 5.5vh, 60px);
+      --fs-mega:    clamp(50px, 7vh, 72px);
+    }
+    
+    /* === 화면 방향별 보정 === */
+    /* 세로 화면(portrait)에서 폰트 살짝 작게, 패딩 살짝 줄임 */
+    html.portrait { font-size: 95%; }
+    
+    /* 가로 화면(landscape)에서는 그대로 */
+    html.landscape { font-size: 100%; }
+    
+    /* 작은 화면 보정 (vmin < 600 = 모바일) */
+    html.small-screen { font-size: 90%; }
+    /* 큰 화면 보정 (vmin > 900 = 큰 태블릿/PC) */
+    html.large-screen { font-size: 105%; }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    html, body { 
+      width: 100vw; width: 100dvw;
+      width: var(--vw, 100vw);
+      height: 100vh; height: 100dvh;
+      height: var(--vh, 100vh);
+      overflow: hidden !important; 
+      font-family: var(--font-body); 
+      color: var(--c-text);
+      user-select: none; -webkit-user-select: none;
+      font-size: clamp(28px, 3.7vh, 39px);
+      line-height: 1.4;
+      letter-spacing: -0.02em;
+      position: fixed;
+      inset: 0;
+      /* 안전 영역 (노치 등) */
+      padding-top: env(safe-area-inset-top, 0);
+      padding-bottom: env(safe-area-inset-bottom, 0);
+      padding-left: env(safe-area-inset-left, 0);
+      padding-right: env(safe-area-inset-right, 0);
+    }
+    
+    #app {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    em, i { font-style: normal; font-weight: bold; }
+    
+    /* select/option 글씨 크게 - 모바일에서도 */
+    select, option {
+      font-family: var(--font-display) !important;
+      font-size: clamp(31px, 3.7vh, 39px) !important;
+    }
+    select option { padding: 12px !important; }
+    
+    /* === 학생 이름 선택 드롭다운 - 큼직하고 예쁘게 === */
+    .name-select-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: clamp(10px, 1.5vh, 16px);
+      margin: clamp(14px, 2vh, 22px) 0;
+      width: 100%;
+    }
+    .name-select-label {
+      font-family: var(--font-display);
+      font-size: clamp(28px, 3.6vh, 36px);
+      color: var(--c-primary-dark);
+      text-align: center;
+    }
+    .name-select {
+      width: 100%;
+      padding: clamp(18px, 2.6vh, 26px) clamp(20px, 3vw, 30px);
+      background: white;
+      border: 5px solid var(--c-primary);
+      border-radius: 22px;
+      font-family: var(--font-display) !important;
+      font-size: clamp(30px, 3.8vh, 40px) !important;
+      color: var(--c-text);
+      cursor: pointer;
+      outline: none;
+      box-shadow: 0 6px 0 0 var(--c-primary-dark), 0 8px 20px rgba(99, 102, 241, 0.2);
+      transition: all 0.15s;
+      /* 화살표 */
+      appearance: none;
+      -webkit-appearance: none;
+      background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236366F1' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+      background-repeat: no-repeat;
+      background-position: right 18px center;
+      background-size: 32px;
+      padding-right: 60px;
+      text-align: center;
+      text-align-last: center;
+    }
+    .name-select:focus {
+      border-color: var(--c-accent-pink);
+    }
+    .name-select:hover {
+      transform: translateY(-2px);
+    }
+    .name-select option {
+      font-size: clamp(28px, 3.5vh, 36px) !important;
+      padding: 16px !important;
+      text-align: center;
+    }
+    
+    /* 강조 스타일 - 형광펜 효과 */
+    strong, b {
+      font-weight: 700;
+      background: var(--highlight-yellow);
+      padding: 0 4px;
+      border-radius: 4px;
+    }
+    
+    /* 강조 헬퍼 클래스 */
+    .hi-pink { background: var(--highlight-pink); padding: 0 4px; border-radius: 4px; }
+    .hi-blue { background: var(--highlight-blue); padding: 0 4px; border-radius: 4px; }
+    .hi-green { background: var(--highlight-green); padding: 0 4px; border-radius: 4px; }
+    .hi-yellow { background: var(--highlight-yellow); padding: 0 4px; border-radius: 4px; }
+    
+    .text-pink { color: var(--c-accent-pink); }
+    .text-blue { color: var(--c-accent-blue); }
+    .text-purple { color: var(--c-accent-purple); }
+    .text-green { color: #059669; }
+    .text-orange { color: var(--c-accent-orange); }
+    body {
+      background: 
+        radial-gradient(circle at 10% 20%, rgba(236, 72, 153, 0.08) 0%, transparent 50%),
+        radial-gradient(circle at 90% 80%, rgba(99, 102, 241, 0.08) 0%, transparent 50%),
+        radial-gradient(circle at 50% 50%, rgba(251, 191, 36, 0.05) 0%, transparent 50%),
+        linear-gradient(135deg, #FEF7FF 0%, #EFF6FF 50%, #FDF4FF 100%);
+    }
+    #app { width: 100%; height: 100%; display: flex; flex-direction: column; position: relative; }
+    
+    button { font-family: inherit; cursor: pointer; border: none; background: none; }
+    input { font-family: inherit; }
+
+    .screen {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      display: flex; flex-direction: column;
+      padding: clamp(4px, 0.8vh, 10px) clamp(4px, 0.8vw, 10px);
+      gap: clamp(4px, 0.8vh, 10px);
+      overflow: hidden !important;
+    }
+    .screen > * { max-width: 100%; min-width: 0; }
+    
+    /* 가로 화면에서 패딩 더 작게 (높이 부족 보정) */
+    html.landscape.small-screen .screen {
+      padding: clamp(2px, 0.5vh, 6px) clamp(4px, 0.8vw, 10px);
+      gap: clamp(2px, 0.5vh, 6px);
+    }
+
+    /* 인트로 카드 - 화면 꽉 차게 */
+    .intro-card {
+      background: white;
+      border-radius: clamp(16px, 2.5vw, 36px);
+      padding: clamp(14px, 2.5vh, 32px) clamp(18px, 3vw, 44px);
+      width: calc(100% - 16px);
+      max-width: min(1000px, calc(100vw - 16px));
+      height: auto;
+      max-height: calc(var(--vh, 100vh) - 100px);
+      text-align: center;
+      box-shadow: 0 20px 50px rgba(99, 102, 241, 0.15), 0 0 0 6px rgba(199, 210, 254, 0.4);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    /* 가로 작은 화면 - 카드 패딩 줄임 */
+    html.landscape.small-screen .intro-card {
+      padding: clamp(8px, 1.5vh, 18px) clamp(14px, 2.5vw, 28px);
+    }
+    /* 세로 화면 - 카드 가로 거의 다 차지 */
+    html.portrait .intro-card {
+      max-width: calc(100vw - 12px);
+    }
+    .intro-card::before {
+      content: '';
+      position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+      background: conic-gradient(from 0deg, transparent, rgba(251, 191, 36, 0.1), transparent, rgba(236, 72, 153, 0.1), transparent);
+      animation: spin 20s linear infinite;
+      z-index: 0;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .intro-card > * { position: relative; z-index: 1; }
+    
+    .intro-title {
+      font-family: var(--font-display);
+      font-size: clamp(55px, 7.8vh, 82px);
+      color: var(--c-primary-dark);
+      margin: clamp(8px, 1.5vh, 14px) 0 clamp(6px, 1vh, 10px);
+      letter-spacing: -1px;
+      line-height: 1.2;
+      text-shadow: 2px 2px 0 rgba(99, 102, 241, 0.1);
+    }
+    .intro-subtitle {
+      font-family: var(--font-body);
+      font-size: clamp(31px, 3.8vh, 40px);
+      color: var(--c-text);
+      margin-bottom: clamp(10px, 1.5vh, 16px);
+      line-height: 1.5;
+      word-break: keep-all;
+      font-weight: 400;
+    }
+    .intro-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: clamp(8px, 1.4vh, 12px);
+    }
+    .intro-card-mini {
+      padding: clamp(14px, 2.2vh, 22px) 12px;
+      border-radius: 18px;
+      font-family: var(--font-display);
+      font-size: clamp(39px, 4.7vh, 51px);
+      font-weight: bold;
+      line-height: 1.2;
+    }
+    .intro-card-mini.c1 { background: #FEF3C7; color: #92400E; }
+    .intro-card-mini.c2 { background: #FCE7F3; color: #BE185D; }
+    .intro-card-mini.c3 { background: #DCFCE7; color: #15803D; }
+    .intro-card-mini.c4 { background: #EDE9FE; color: #6D28D9; }
+
+    /* 버튼 */
+    .btn-main {
+      width: 100%;
+      padding: clamp(14px, 2.2vh, 22px);
+      background: linear-gradient(180deg, #818CF8, #6366F1);
+      color: white;
+      border-radius: clamp(16px, 2.2vw, 24px);
+      font-family: var(--font-display);
+      font-size: clamp(28px, 3.6vh, 38px);
+      box-shadow: 0 7px 0 0 #4338CA, 0 12px 22px rgba(99, 102, 241, 0.3);
+      transition: all 0.15s;
+      letter-spacing: 0.3px;
+    }
+    .btn-main:hover { transform: translateY(-2px); }
+    .btn-main:active { transform: translateY(5px); box-shadow: 0 2px 0 0 #4338CA; }
+    .btn-main:disabled { background: #CBD5E1; box-shadow: 0 4px 0 0 #94A3B8; cursor: not-allowed; }
+    
+    .btn-secondary {
+      padding: clamp(12px, 1.8vh, 16px) clamp(18px, 2.6vw, 26px);
+      background: white;
+      color: var(--c-primary);
+      border: 3px solid var(--c-primary-light);
+      border-radius: 18px;
+      font-family: var(--font-display);
+      font-size: clamp(22px, 2.8vh, 28px);
+      box-shadow: 0 4px 0 0 var(--c-primary-light);
+      transition: all 0.15s;
+    }
+    .btn-secondary:active { transform: translateY(3px); box-shadow: 0 1px 0 0 var(--c-primary-light); }
+
+    /* 학생 선택 */
+    .student-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(min(160px, 30vw), 1fr));
+      gap: clamp(8px, 1.5vw, 16px);
+      overflow-y: auto;
+      padding: 8px;
+    }
+    .student-card {
+      background: white;
+      border-radius: 20px;
+      padding: clamp(12px, 2vh, 20px) 8px;
+      text-align: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      border: 4px solid transparent;
+      transition: all 0.15s;
+      cursor: pointer;
+    }
+    .student-card:hover { transform: translateY(-4px); border-color: var(--c-primary-light); }
+    .student-card .avatar {
+      font-size: clamp(64px, 9.0vh, 93px);
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+    .student-card .name {
+      font-family: var(--font-display);
+      font-size: clamp(33px, 3.8vh, 43px);
+      color: var(--c-text);
+    }
+    .student-card .meta {
+      font-size: clamp(26px, 3.0vh, 31px);
+      color: var(--c-text-light);
+      font-family: var(--font-body);
+    }
+
+    /* 활동 헤더 */
+    .activity-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: white;
+      padding: clamp(12px, 2vh, 18px) clamp(16px, 2.5vw, 24px);
+      border-radius: 22px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+      flex-shrink: 0;
+      flex-wrap: wrap;
+    }
+    .activity-badge {
+      background: linear-gradient(135deg, var(--c-primary), var(--c-accent-purple));
+      color: white;
+      padding: 8px 18px;
+      border-radius: 999px;
+      font-family: var(--font-display);
+      font-size: clamp(33px, 3.8vh, 39px);
+      box-shadow: 0 4px 8px rgba(99, 102, 241, 0.3);
+      flex-shrink: 0;
+    }
+    .activity-title {
+      font-family: var(--font-display);
+      font-size: clamp(46px, 5.2vh, 60px);
+      color: var(--c-text);
+      flex: 1;
+      min-width: 0;
+      letter-spacing: -0.5px;
+    }
+
+    /* 분류 기준 박스 */
+    .criterion-box {
+      display: inline-flex;
+      align-items: center;
+      background: #F0F9FF;
+      border: 3px solid #BAE6FD;
+      border-radius: 18px;
+      overflow: hidden;
+      font-family: var(--font-display);
+    }
+    .criterion-label {
+      background: #BAE6FD;
+      padding: 10px 18px;
+      color: #0C4A6E;
+      font-size: clamp(33px, 3.8vh, 39px);
+    }
+    .criterion-value {
+      padding: 10px 20px;
+      color: var(--c-primary-dark);
+      font-size: clamp(38px, 4.5vh, 43px);
+    }
+    .criterion-lock { padding: 0 10px 0 0; color: #0EA5E9; font-size: 20px; }
+
+    /* 스피커 토글 */
+    .speaker-toggle {
+      width: clamp(48px, 6.5vh, 60px);
+      height: clamp(48px, 6.5vh, 60px);
+      border-radius: 50%;
+      background: white;
+      color: #94A3B8;
+      border: 3px solid #E2E8F0;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.2s;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.06);
+      flex-shrink: 0;
+      position: relative;
+    }
+    .speaker-toggle.on {
+      background: linear-gradient(135deg, var(--c-primary), var(--c-accent-purple));
+      color: white;
+      border-color: var(--c-primary-dark);
+    }
+    .speaker-toggle.on::after {
+      content: ''; position: absolute; inset: -4px;
+      border-radius: 50%; border: 2px dashed var(--c-primary);
+      animation: pulse-ring 2s ease-out infinite;
+    }
+    @keyframes pulse-ring {
+      0% { opacity: 1; transform: scale(1); }
+      100% { opacity: 0; transform: scale(1.4); }
+    }
+
+    /* 튜토리얼 배너 */
+    .tutorial-banner {
+      background: linear-gradient(90deg, #FEF3C7, #FED7AA);
+      border: 3px solid #FBBF24;
+      border-radius: 18px;
+      padding: clamp(8px, 1.2vh, 12px) clamp(14px, 2vw, 20px);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+      box-shadow: 0 4px 10px rgba(251, 191, 36, 0.2);
+      position: relative;
+      overflow: hidden;
+    }
+    .tutorial-banner::before {
+      content: '';
+      position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent);
+      animation: shimmer 3s infinite;
+    }
+    @keyframes shimmer { 100% { left: 100%; } }
+    .tutorial-icon {
+      font-size: clamp(39px, 5.1vh, 57px);
+      flex-shrink: 0;
+      position: relative; z-index: 1;
+    }
+    .tutorial-text {
+      flex: 1;
+      font-family: var(--font-display);
+      font-size: clamp(31px, 3.7vh, 39px);
+      color: #78350F;
+      line-height: 1.3;
+      word-break: keep-all;
+      position: relative; z-index: 1;
+      letter-spacing: -0.3px;
+    }
+    .tutorial-text strong { 
+      color: #B45309;
+      background: linear-gradient(180deg, transparent 60%, #FBBF24 60%);
+      padding: 0 4px;
+      border-radius: 4px;
+    }
+
+    /* 피드백 */
+    .feedback-area {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: white;
+      padding: clamp(12px, 2vh, 18px) clamp(18px, 2.5vw, 26px);
+      border-radius: 20px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+      border: 3px solid #E0E7FF;
+      flex-shrink: 0;
+      min-height: clamp(60px, 8vh, 80px);
+    }
+    .feedback-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .feedback-text {
+      font-family: var(--font-display);
+      font-size: clamp(43px, 5.2vh, 55px);
+      line-height: 1.2;
+      word-break: keep-all;
+    }
+    .feedback-text.happy { color: var(--c-primary); }
+    .feedback-text.sad { color: var(--c-accent-pink); }
+    .feedback-text.thinking { color: var(--c-text); }
+    /* 보조 안내 - 작게, 흐리게 */
+    .feedback-sub {
+      font-family: var(--font-display);
+      font-size: clamp(26px, 2.6vh, 32px);
+      color: var(--c-text-light);
+      line-height: 1.3;
+      word-break: keep-all;
+      opacity: 0.8;
+    }
+
+    /* 메인 분류 */
+    .sort-main {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: clamp(8px, 1.5vw, 16px);
+      min-height: 0;
+    }
+    
+    .item-tray {
+      background: rgba(255, 255, 255, 0.8);
+      backdrop-filter: blur(10px);
+      border: 4px dashed var(--c-primary-light);
+      border-radius: 24px;
+      padding: clamp(8px, 1.5vh, 14px);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      min-height: 0;
+    }
+    .tray-label {
+      background: linear-gradient(135deg, var(--c-primary), var(--c-accent-purple));
+      color: white;
+      padding: 8px 20px;
+      border-radius: 999px;
+      font-family: var(--font-display);
+      font-size: clamp(20px, 2.6vh, 26px);
+      align-self: center;
+      margin-bottom: 10px;
+      box-shadow: 0 4px 8px rgba(99, 102, 241, 0.25);
+      flex-shrink: 0;
+      white-space: nowrap;
+    }
+    .tray-items {
+      flex: 1;
+      display: flex; flex-wrap: wrap;
+      gap: clamp(6px, 1.2vw, 12px);
+      justify-content: center;
+      align-content: flex-start;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding: clamp(8px, 1.2vh, 12px) 4px;
+      min-height: 0;
+    }
+
+    .draggable-item {
+      background: white;
+      border-radius: 18px;
+      padding: clamp(8px, 1.4vh, 12px) clamp(8px, 1.2vw, 12px);
+      box-shadow: 0 6px 14px rgba(0,0,0,0.08), 0 0 0 3px rgba(199, 210, 254, 0.5);
+      cursor: grab;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      transition: transform 0.15s, box-shadow 0.15s;
+      touch-action: none;
+      position: relative;
+      min-width: clamp(90px, 14vw, 130px);
+      max-width: clamp(110px, 18vw, 160px);
+      flex-shrink: 0;
+    }
+    .draggable-item:hover {
+      transform: translateY(-4px) rotate(2deg);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.12), 0 0 0 4px var(--c-primary-light);
+    }
+    .draggable-item.dragging {
+      cursor: grabbing;
+      transform: scale(1.3) rotate(5deg);
+      z-index: 1000;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.25);
+    }
+    /* 클릭으로 선택된 상태 */
+    .draggable-item.selected {
+      transform: scale(1.15);
+      box-shadow: 0 0 0 6px var(--c-accent-yellow), 0 12px 30px rgba(251, 191, 36, 0.5);
+      animation: bounce-select 0.6s infinite;
+      cursor: pointer;
+    }
+    @keyframes bounce-select {
+      0%, 100% { transform: scale(1.15) translateY(0); }
+      50% { transform: scale(1.15) translateY(-6px); }
+    }
+    /* 클릭 가능 분류함 */
+    .drop-bin.click-target {
+      animation: pulse-bin 1s ease-in-out infinite;
+      cursor: pointer;
+    }
+    @keyframes pulse-bin {
+      0%, 100% { box-shadow: inset 0 0 0 0 var(--c-accent-yellow); }
+      50% { box-shadow: inset 0 0 0 6px var(--c-accent-yellow); }
+    }
+    .item-icon {
+      font-size: clamp(46px, 7vh, 72px);
+      line-height: 1;
+      pointer-events: none;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));
+    }
+    .item-name {
+      font-family: var(--font-display);
+      font-size: clamp(20px, 2.4vh, 26px);
+      color: var(--c-text);
+      pointer-events: none;
+      white-space: nowrap;
+    }
+
+    .bins-column {
+      display: grid;
+      gap: clamp(6px, 1vh, 10px);
+      grid-template-rows: repeat(var(--bin-count, 3), 1fr);
+      overflow: hidden;
+    }
+    .drop-bin {
+      border: 4px dashed;
+      border-radius: 22px;
+      padding: clamp(8px, 1.4vh, 14px);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      transition: all 0.2s;
+      min-height: 0;
+      position: relative;
+      z-index: 2;
+    }
+    .drop-bin.drag-over {
+      transform: scale(1.02);
+      box-shadow: inset 0 0 0 4px rgba(99, 102, 241, 0.3);
+    }
+    .bin-label-row {
+      display: flex; align-items: center; gap: 8px;
+      margin-bottom: 6px; flex-shrink: 0;
+    }
+    .bin-label {
+      background: white;
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-family: var(--font-display);
+      font-size: clamp(20px, 2.5vh, 26px);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+      border: 2px solid;
+      white-space: nowrap;
+    }
+    .bin-count {
+      font-family: var(--font-display);
+      font-size: clamp(15px, 1.9vh, 19px);
+      color: var(--c-text-light);
+    }
+    .bin-items {
+      flex: 1;
+      display: flex; flex-wrap: wrap;
+      gap: 6px;
+      align-content: flex-start;
+      justify-content: center;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding: 4px;
+      min-height: 0;
+      align-items: flex-start;
+    }
+    .bin-item {
+      background: rgba(255,255,255,0.95);
+      border-radius: 12px;
+      padding: 6px 10px;
+      display: flex; flex-direction: column; align-items: center;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.06);
+      animation: pop-in 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      flex-shrink: 0;
+      max-width: calc(50% - 6px);
+    }
+    @keyframes pop-in {
+      0% { transform: scale(0) rotate(180deg); }
+      100% { transform: scale(1) rotate(0); }
+    }
+    .bin-item .bin-item-icon { 
+      font-size: clamp(36px, 5vh, 52px); 
+      line-height: 1; 
+    }
+    .bin-item .bin-item-name { 
+      font-family: var(--font-display); 
+      font-size: clamp(15px, 1.9vh, 19px); 
+      color: var(--c-text-light); 
+      margin-top: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 100%;
+    }
+
+    .bin-amber { background: #FFFBEB; border-color: #FCD34D; }
+    .bin-amber .bin-label { color: #92400E; border-color: #FCD34D; }
+    .bin-emerald { background: #ECFDF5; border-color: #6EE7B7; }
+    .bin-emerald .bin-label { color: #065F46; border-color: #6EE7B7; }
+    .bin-sky { background: #F0F9FF; border-color: #7DD3FC; }
+    .bin-sky .bin-label { color: #075985; border-color: #7DD3FC; }
+    .bin-rose { background: #FFF1F2; border-color: #FDA4AF; }
+    .bin-rose .bin-label { color: #9F1239; border-color: #FDA4AF; }
+    .bin-violet { background: #F5F3FF; border-color: #C4B5FD; }
+    .bin-violet .bin-label { color: #5B21B6; border-color: #C4B5FD; }
+    .bin-cyan { background: #ECFEFF; border-color: #67E8F9; }
+    .bin-cyan .bin-label { color: #155E75; border-color: #67E8F9; }
+    .bin-orange { background: #FFF7ED; border-color: #FDBA74; }
+    .bin-orange .bin-label { color: #9A3412; border-color: #FDBA74; }
+
+    /* 활동3 */
+    .choice-grid {
+      flex: 1;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(200px, 100%), 1fr));
+      gap: clamp(8px, 1.5vh, 14px);
+      overflow-y: auto;
+      padding: 4px;
+      align-items: stretch;
+    }
+    .choice-card {
+      background: white;
+      border: 4px solid var(--c-primary-light);
+      border-radius: 22px;
+      padding: clamp(12px, 2vh, 18px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      text-align: center;
+      box-shadow: 0 6px 14px rgba(0,0,0,0.08);
+      transition: all 0.15s;
+      font-family: var(--font-display);
+      font-size: clamp(20px, 2.6vh, 26px);
+      color: var(--c-text);
+    }
+    .choice-card:hover { transform: translateY(-3px); border-color: var(--c-primary); }
+    .choice-card.selected {
+      background: linear-gradient(135deg, #10B981, #059669);
+      color: white;
+      border-color: #047857;
+    }
+    .choice-icon { font-size: clamp(40px, 6vh, 60px); flex-shrink: 0; line-height: 1; }
+    .choice-text { word-break: keep-all; line-height: 1.3; }
+
+    /* 활동4 셋업 */
+    .setup-section {
+      background: white;
+      border-radius: 24px;
+      padding: clamp(16px, 2.4vh, 22px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+      border: 3px solid #E0E7FF;
+    }
+    .setup-step-header {
+      display: flex; align-items: center; gap: 12px;
+      margin-bottom: 14px;
+    }
+    .setup-step-num {
+      width: clamp(36px, 5vh, 44px); height: clamp(36px, 5vh, 44px);
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--c-primary), var(--c-accent-purple));
+      color: white;
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--font-display);
+      font-size: clamp(38px, 4.3vh, 43px);
+      flex-shrink: 0;
+    }
+    .setup-step-title {
+      font-family: var(--font-display);
+      font-size: clamp(43px, 4.7vh, 51px);
+      color: var(--c-text);
+    }
+    .text-input {
+      width: 100%;
+      padding: clamp(14px, 2.2vh, 18px) 18px;
+      background: #F8FAFC;
+      border: 3px solid #E0E7FF;
+      border-radius: 16px;
+      font-family: var(--font-display);
+      font-size: clamp(38px, 4.5vh, 43px);
+      color: var(--c-text);
+      outline: none;
+      transition: all 0.15s;
+    }
+    .text-input:focus { border-color: var(--c-primary); background: white; }
+    .text-input::placeholder { color: #94A3B8; font-family: var(--font-body); font-weight: normal; }
+
+    .preset-chips { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+    .preset-chip {
+      padding: clamp(10px, 1.6vh, 14px) clamp(16px, 2.4vw, 20px);
+      background: white;
+      border: 3px solid #E0E7FF;
+      border-radius: 999px;
+      font-family: var(--font-display);
+      font-size: clamp(33px, 3.8vh, 39px);
+      color: var(--c-text);
+      transition: all 0.15s;
+    }
+    .preset-chip.active {
+      background: linear-gradient(135deg, #8B5CF6, #6366F1);
+      color: white;
+      border-color: #6D28D9;
+    }
+    .preset-chip:hover:not(.active) { border-color: var(--c-primary); }
+
+    .bin-inputs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+    .bin-input-wrap {
+      display: flex; align-items: center; gap: 8px;
+      background: #F8FAFC;
+      border: 3px solid #E0E7FF;
+      border-radius: 14px;
+      padding: 10px 14px;
+    }
+    .bin-input-wrap input {
+      flex: 1; background: transparent; border: none; outline: none;
+      font-family: var(--font-display);
+      font-size: clamp(31px, 3.8vh, 37px);
+      min-width: 0;
+    }
+    .auto-toggle {
+      padding: 8px 16px;
+      border: 2px solid;
+      border-radius: 999px;
+      font-family: var(--font-display);
+      font-size: clamp(30px, 3.3vh, 32px);
+      transition: all 0.15s;
+      flex-shrink: 0;
+    }
+    .auto-toggle.on { background: var(--c-accent-green); color: white; border-color: #047857; }
+    .auto-toggle.off { background: white; color: var(--c-text-light); border-color: #CBD5E1; }
+
+    .block-svg { filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15)); pointer-events: none; }
+
+    /* 녹음 카드 - 화면 꽉 차게 */
+    .record-card {
+      background: linear-gradient(180deg, white, #FAF5FF);
+      border-radius: clamp(16px, 2.5vh, 28px);
+      padding: clamp(14px, 2.2vh, 26px) clamp(20px, 3vw, 40px);
+      width: 100%;
+      max-width: min(1400px, 100%);
+      height: 100%;
+      max-height: 100%;
+      box-shadow: 0 16px 40px rgba(99, 102, 241, 0.15);
+      text-align: center;
+      border: 4px solid white;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      overflow: hidden;
+    }
+    /* 세로 화면 - 패딩 줄임 */
+    html.portrait .record-card {
+      padding: clamp(10px, 1.8vh, 18px) clamp(12px, 3vw, 24px);
+    }
+    /* 녹음 카드 레이아웃 - 컨텐츠 균등 분배 */
+    .record-card-layout {
+      justify-content: space-around !important;
+      gap: clamp(8px, 1.5vh, 16px);
+    }
+    /* 단계 뱃지 - 적당히 */
+    .record-phase-badge {
+      align-self: center;
+      color: white;
+      padding: clamp(6px, 1vh, 10px) clamp(18px, 2.5vw, 28px);
+      border-radius: 999px;
+      font-family: var(--font-display);
+      font-size: clamp(22px, 2.6vh, 28px);
+      flex-shrink: 0;
+    }
+    /* 질문 - 큼 */
+    .record-question {
+      font-family: var(--font-display);
+      font-size: clamp(28px, 3.6vh, 38px);
+      color: var(--c-text);
+      line-height: 1.3;
+      word-break: keep-all;
+      padding: clamp(12px, 1.8vh, 18px) clamp(16px, 2.4vw, 28px);
+      background: #FFFBEB;
+      border-radius: 16px;
+      border: 3px solid #FCD34D;
+      flex-shrink: 0;
+      text-align: center;
+    }
+    /* 힌트 */
+    .record-hint-box {
+      background: #FEF3C7;
+      border: 2px solid #FBBF24;
+      border-radius: 14px;
+      padding: clamp(10px, 1.5vh, 14px) clamp(14px, 2vw, 20px);
+      text-align: center;
+      flex-shrink: 0;
+    }
+    .record-hint-text {
+      color: #78350F;
+      font-size: clamp(22px, 2.7vh, 28px);
+      line-height: 1.4;
+      word-break: keep-all;
+      font-family: var(--font-display);
+    }
+    /* 녹음 버튼 - 적당한 크기 */
+    .record-button {
+      width: clamp(80px, 11vh, 110px);
+      height: clamp(80px, 11vh, 110px);
+      border-radius: 50%;
+      background: linear-gradient(135deg, #EF4444, #DC2626);
+      color: white;
+      font-size: clamp(38px, 5.5vh, 56px);
+      box-shadow: 0 8px 24px rgba(239, 68, 68, 0.4), 0 0 0 0 rgba(239, 68, 68, 0.5);
+      transition: all 0.2s;
+      margin: 0 auto;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .record-button:hover { transform: scale(1.05); }
+    .record-button.recording {
+      animation: pulse-record 1.2s infinite;
+    }
+    @keyframes pulse-record {
+      0%, 100% { box-shadow: 0 8px 24px rgba(239, 68, 68, 0.4), 0 0 0 0 rgba(239, 68, 68, 0.5); }
+      50% { box-shadow: 0 8px 24px rgba(239, 68, 68, 0.4), 0 0 0 28px rgba(239, 68, 68, 0); }
+    }
+    /* 상태 */
+    .record-status {
+      font-family: var(--font-display);
+      font-size: clamp(22px, 2.6vh, 26px);
+      color: var(--c-text-light);
+      flex-shrink: 0;
+      text-align: center;
+    }
+    .transcript-empty { color: #94A3B8; font-family: var(--font-display); }
+    
+    /* 녹음 입력 영역 - 버튼+상태 콤팩트 */
+    .record-input-area {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: clamp(3px, 0.5vh, 6px);
+      flex-shrink: 0;
+    }
+    
+    /* textarea - 적정 크기 */
+    .transcript-textarea {
+      width: 100%;
+      padding: clamp(12px, 1.8vh, 18px) clamp(14px, 2vw, 20px);
+      background: #F0F9FF;
+      border: 3px solid #BAE6FD;
+      border-radius: 14px;
+      font-family: var(--font-display);
+      font-size: clamp(22px, 2.7vh, 28px);
+      color: var(--c-text);
+      line-height: 1.4;
+      resize: none;
+      outline: none;
+      transition: border-color 0.15s;
+      flex-shrink: 0;
+      min-height: clamp(60px, 8vh, 90px);
+    }
+    .transcript-textarea:focus {
+      border-color: var(--c-primary);
+      background: white;
+    }
+    .transcript-textarea::placeholder {
+      color: #94A3B8;
+      font-family: var(--font-display);
+      font-size: clamp(20px, 2.5vh, 24px);
+    }
+    
+    /* 녹음 후 영역 */
+    #post-record-area {
+      background: #FAF5FF;
+      border: 2px solid #E9D5FF;
+      border-radius: 14px;
+      padding: clamp(10px, 1.5vh, 14px) clamp(12px, 1.8vw, 16px);
+      flex-shrink: 0;
+      animation: pop-in 0.3s ease;
+    }
+    /* 한 줄 레이아웃 */
+    .post-compact-row {
+      display: flex;
+      gap: clamp(8px, 1.2vw, 14px);
+      justify-content: center;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .btn-listen, .btn-rerecord {
+      padding: clamp(10px, 1.4vh, 14px) clamp(14px, 2vw, 20px);
+      border-radius: 999px;
+      font-family: var(--font-display);
+      font-size: clamp(18px, 2.4vh, 22px);
+      transition: all 0.15s;
+      border: 3px solid;
+      flex-shrink: 0;
+    }
+    .btn-listen {
+      background: white;
+      color: #6366F1;
+      border-color: #C7D2FE;
+    }
+    .btn-listen:hover { background: #EEF2FF; transform: translateY(-1px); }
+    .btn-rerecord {
+      background: white;
+      color: #DC2626;
+      border-color: #FECACA;
+    }
+    .btn-rerecord:hover { background: #FEE2E2; transform: translateY(-1px); }
+    
+    /* 별 5개 인라인 */
+    .mini-stars-inline {
+      display: flex;
+      gap: clamp(3px, 0.5vw, 6px);
+      align-items: center;
+      flex-shrink: 0;
+      padding-left: clamp(6px, 1vw, 12px);
+      border-left: 2px solid #E9D5FF;
+    }
+    .mini-star-btn {
+      width: clamp(36px, 5vh, 48px);
+      height: clamp(36px, 5vh, 48px);
+      background: transparent;
+      border: none;
+      padding: 0;
+      cursor: pointer;
+      transition: transform 0.15s;
+    }
+    .mini-star-btn .star-svg { width: 100%; height: 100%; }
+    .mini-star-btn .star-svg .star-fill { fill: #D1D5DB; }
+    .mini-star-btn .star-svg .star-shadow { fill: #9CA3AF; }
+    .mini-star-btn.filled .star-svg .star-fill { fill: #FBBF24; }
+    .mini-star-btn.filled .star-svg .star-shadow { fill: #D97706; }
+    .mini-star-btn.filled { transform: scale(1.1); }
+    .mini-star-btn:hover { transform: scale(1.15); }
+    .mini-rating-text {
+      font-family: var(--font-display);
+      font-size: clamp(20px, 2.4vh, 24px);
+      color: var(--c-primary-dark);
+      text-align: center;
+      margin-top: clamp(4px, 0.7vh, 8px);
+      min-height: clamp(24px, 3vh, 32px);
+      line-height: 1.2;
+    }
+    
+    
+    /* 액션 버튼 영역 - 항상 카드 안에 보이게 */
+    .record-actions {
+      display: flex;
+      gap: clamp(8px, 1.2vw, 14px);
+      justify-content: center;
+      align-items: center;
+      flex-wrap: wrap;
+      flex-shrink: 0;
+      padding-top: clamp(4px, 0.8vh, 8px);
+    }
+    .record-actions .btn-secondary {
+      flex: 0 0 auto;
+    }
+    .record-save-btn {
+      flex: 1;
+      max-width: 280px;
+    }
+
+    /* 자기평가 - 별 명확하게 */
+    .stars-container {
+      display: flex; justify-content: center; gap: clamp(8px, 1.8vw, 18px);
+      margin: clamp(12px, 2vh, 20px) 0;
+    }
+    .star-btn {
+      transition: transform 0.2s;
+      background: transparent;
+      border: none;
+      padding: 0;
+      cursor: pointer;
+      width: clamp(70px, 11vh, 100px);
+      height: clamp(70px, 11vh, 100px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .star-btn .star-svg {
+      width: 100%;
+      height: 100%;
+      filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
+    }
+    /* 안 칠한 별 - 깔끔한 회색 */
+    .star-btn .star-svg .star-fill { fill: #D1D5DB; }
+    .star-btn .star-svg .star-shadow { fill: #9CA3AF; }
+    /* 칠한 별 - 선명한 노란색 */
+    .star-btn.filled .star-svg .star-fill { fill: #FBBF24; }
+    .star-btn.filled .star-svg .star-shadow { fill: #D97706; }
+    .star-btn.filled {
+      animation: star-pop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    @keyframes star-pop {
+      0% { transform: scale(0.5) rotate(-180deg); }
+      100% { transform: scale(1) rotate(0); }
+    }
+    .star-btn:hover { transform: scale(1.1); }
+    .star-btn:active { transform: scale(0.95); }
+    
+    /* 자기평가 메인 질문 - 크게 */
+    .self-rating-question {
+      font-family: var(--font-display);
+      font-size: clamp(34px, 4.4vh, 46px);
+      color: var(--c-text);
+      line-height: 1.3;
+      margin-bottom: clamp(8px, 1.2vh, 12px);
+      word-break: keep-all;
+    }
+    /* 보조 안내 - 작게, 흐리게 */
+    .self-rating-sub {
+      font-family: var(--font-display);
+      font-size: clamp(20px, 2.6vh, 26px);
+      color: var(--c-text-light);
+      line-height: 1.4;
+      margin-bottom: clamp(14px, 2vh, 22px);
+      word-break: keep-all;
+    }
+    /* 별 누른 후 표시 텍스트 */
+    .rating-text-display {
+      font-family: var(--font-display);
+      font-size: clamp(28px, 3.6vh, 36px);
+      color: var(--c-primary-dark);
+      min-height: clamp(40px, 6vh, 60px);
+      margin: clamp(8px, 1.2vh, 14px) 0 clamp(12px, 1.8vh, 18px);
+      line-height: 1.4;
+      word-break: keep-all;
+    }
+
+    /* 임명장 */
+    .stamp-card {
+      background: white;
+      border-radius: clamp(24px, 4vw, 48px);
+      padding: clamp(14px, 2.5vh, 36px) clamp(18px, 3vw, 40px);
+      width: calc(100% - 16px);
+      max-width: min(900px, calc(100vw - 16px));
+      max-height: calc(var(--vh, 100vh) - 30px);
+      text-align: center;
+      box-shadow: 0 20px 50px rgba(99, 102, 241, 0.2), 0 0 0 12px rgba(199, 210, 254, 0.4);
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      overflow: hidden;
+    }
+    html.portrait .stamp-card { max-width: calc(100vw - 12px); }
+    .stamp-circle {
+      display: inline-block;
+      border: 6px dashed var(--c-primary-light);
+      border-radius: 50%;
+      padding: 20px;
+      margin: 16px 0 24px;
+      transform: rotate(-3deg);
+    }
+    .stamp-inner {
+      width: clamp(120px, 18vh, 160px);
+      height: clamp(120px, 18vh, 160px);
+      border: 8px solid var(--c-primary);
+      border-radius: 50%;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      background: white;
+      color: var(--c-primary);
+      box-shadow: inset 0 4px 12px rgba(0,0,0,0.08);
+    }
+    .stamp-inner-text { font-family: var(--font-display); font-size: clamp(30px, 3.4vh, 36px); }
+    .stamp-inner-emoji { font-size: clamp(64px, 9.0vh, 93px); margin: 4px 0; }
+
+    /* 콘페티 */
+    .confetti {
+      position: fixed; inset: 0;
+      pointer-events: none;
+      z-index: 9999;
+    }
+
+    /* === 이름 선택 드롭다운 (저학년 친화) === */
+    .name-select-wrap {
+      text-align: left;
+      margin-bottom: clamp(16px, 2.5vh, 24px);
+      background: #FDF4FF;
+      border: 4px solid #E9D5FF;
+      border-radius: 22px;
+      padding: clamp(16px, 2.5vh, 22px);
+    }
+    .name-select-label {
+      display: block;
+      font-family: var(--font-display);
+      font-size: clamp(34px, 4.2vh, 44px);
+      color: #6B21A8;
+      margin-bottom: clamp(12px, 1.8vh, 16px);
+    }
+    .name-select {
+      width: 100%;
+      padding: clamp(18px, 2.8vh, 26px) clamp(20px, 2.8vw, 28px);
+      background: white;
+      border: 4px solid #C7D2FE;
+      border-radius: 18px;
+      font-family: var(--font-display);
+      font-size: clamp(32px, 4.2vh, 42px) !important;
+      color: var(--c-text);
+      cursor: pointer;
+      appearance: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 24 24' fill='none' stroke='%236366F1' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+      background-repeat: no-repeat;
+      background-position: right clamp(16px, 2.5vw, 24px) center;
+      background-size: clamp(28px, 3.5vh, 40px);
+      padding-right: clamp(56px, 8vw, 80px);
+      transition: all 0.15s;
+    }
+    .name-select:focus {
+      outline: none;
+      border-color: var(--c-primary);
+      box-shadow: 0 6px 16px rgba(99, 102, 241, 0.2);
+    }
+    .name-select:hover {
+      border-color: var(--c-primary);
+    }
+    .name-select option {
+      font-size: clamp(26px, 3.4vh, 32px) !important;
+      padding: 14px !important;
+      font-family: var(--font-display);
+    }
+
+    /* 모달 */
+    .modal-backdrop {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.5);
+      backdrop-filter: blur(4px);
+      z-index: 1000;
+      display: flex; align-items: center; justify-content: center;
+      padding: 16px;
+      animation: fade-in 0.3s;
+    }
+    @keyframes fade-in { from { opacity: 0; } }
+    .modal-content {
+      background: white;
+      border-radius: 32px;
+      padding: clamp(20px, 3vh, 32px);
+      max-width: min(560px, 92vw);
+      width: 100%;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+      animation: slide-up 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      text-align: center;
+    }
+    @keyframes slide-up {
+      from { transform: translateY(40px) scale(0.95); opacity: 0; }
+      to { transform: translateY(0) scale(1); opacity: 1; }
+    }
+    .modal-title {
+      font-family: var(--font-display);
+      font-size: clamp(51px, 6.0vh, 62px);
+      color: var(--c-text);
+      margin: 14px 0;
+    }
+    .modal-body {
+      font-family: var(--font-body);
+      font-size: clamp(38px, 4.1vh, 43px);
+      color: var(--c-text-light);
+      line-height: 1.5;
+      word-break: keep-all;
+      margin-bottom: 22px;
+    }
+
+    /* 스크롤바 */
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(99, 102, 241, 0.3); border-radius: 4px; }
+
+    /* === 반응형 미디어 쿼리 === */
+    /* 좁은 화면 (모바일 세로) - 트레이/분류함 세로 배치 */
+    @media (max-width: 640px) {
+      .sort-main { 
+        grid-template-columns: 1fr; 
+        grid-template-rows: 1fr 1.2fr; 
+      }
+      .bin-inputs { grid-template-columns: 1fr 1fr; }
+      .activity-header { padding: 8px 12px; gap: 8px; }
+      .activity-title { font-size: clamp(28px, 3.9vh, 37px); }
+    }
+    
+    /* 가로 짧은 화면 (낮은 노트북, 모바일 가로) */
+    @media (max-height: 500px) {
+      .intro-card, .record-card, .stamp-card { 
+        padding: 10px 20px;
+      }
+      .intro-title { font-size: clamp(39px, 6.7vh, 57px) !important; margin: 6px 0; }
+      .intro-subtitle { font-size: clamp(25px, 3.3vh, 31px) !important; margin-bottom: 10px; }
+      .record-question { font-size: clamp(31px, 4.6vh, 45px) !important; padding: 10px !important; margin-bottom: 12px !important; }
+      .record-button { 
+        width: clamp(70px, 10vh, 100px) !important;
+        height: clamp(70px, 10vh, 100px) !important;
+      }
+      .feedback-area { min-height: clamp(40px, 6vh, 60px); padding: 6px 14px; }
+      .tutorial-banner { padding: 5px 12px; }
+    }
+    
+    /* 매우 작은 화면 (모바일 가로) */
+    @media (max-height: 400px) {
+      .intro-title { font-size: clamp(33px, 5.3vh, 45px) !important; }
+      .intro-grid { gap: 4px; }
+      .intro-card-mini { padding: 6px !important; font-size: clamp(28px, 3.9vh, 37px) !important; }
+      .btn-main { padding: 8px !important; font-size: clamp(20px, 3vh, 26px) !important; }
+    }
+    
+    /* === 가로 화면에서 sort-main 비율 조정 === */
+    /* 가로가 넓으면 트레이가 더 작게, 분류함이 더 크게 */
+    @media (min-aspect-ratio: 16/9) {
+      .sort-main { grid-template-columns: 0.8fr 1.2fr; }
+    }
+    
+    @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+  </style>
+</head>
+<body>
+  <div id="app"></div>
+  <canvas id="confetti-canvas" class="confetti"></canvas>
+
+  <script>
+    // ================================================
+    //  반응형 viewport 시스템 (모든 기기 대응)
+    // ================================================
+    // CSS의 100vh가 모바일 주소창 때문에 부정확한 문제 해결
+    // JS로 실제 보이는 viewport를 측정해서 CSS 변수에 주입
+    function updateViewportSize() {
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+      const vmin = Math.min(vw, vh);
+      const vmax = Math.max(vw, vh);
+      
+      document.documentElement.style.setProperty('--vw', vw + 'px');
+      document.documentElement.style.setProperty('--vh', vh + 'px');
+      document.documentElement.style.setProperty('--vmin', vmin + 'px');
+      document.documentElement.style.setProperty('--vmax', vmax + 'px');
+      
+      // 1vh, 1vw 단위 (계산용)
+      document.documentElement.style.setProperty('--1vh', (vh * 0.01) + 'px');
+      document.documentElement.style.setProperty('--1vw', (vw * 0.01) + 'px');
+      document.documentElement.style.setProperty('--1vmin', (vmin * 0.01) + 'px');
+      
+      // 화면 비율로 글씨 크기 동적 조정
+      // 기준: 1024x768 (태블릿 가로) → scale 1.0
+      // 작은 화면일수록 폰트도 작아짐, 큰 화면일수록 커짐
+      const baseSize = 1024 * 768;
+      const currentSize = vw * vh;
+      const ratio = Math.sqrt(currentSize / baseSize);
+      const scale = Math.max(0.7, Math.min(1.6, ratio));
+      document.documentElement.style.setProperty('--scale', scale);
+      
+      // 화면 방향 클래스
+      document.documentElement.classList.toggle('landscape', vw > vh);
+      document.documentElement.classList.toggle('portrait', vh >= vw);
+      
+      // 화면 크기 카테고리
+      document.documentElement.classList.toggle('small-screen', vmin < 600);
+      document.documentElement.classList.toggle('medium-screen', vmin >= 600 && vmin < 900);
+      document.documentElement.classList.toggle('large-screen', vmin >= 900);
+    }
+    
+    updateViewportSize();
+    window.addEventListener('resize', updateViewportSize);
+    window.addEventListener('orientationchange', () => {
+      setTimeout(updateViewportSize, 100);
+    });
+    // visualViewport (모바일 키보드 등 대응)
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', updateViewportSize);
+    }
+  </script>
+
+  <script>
+    // ================================================
+    //  설정 (Apps Script URL)
+    // ================================================
+    /* ===== BYOB: 서버 주소 감지 (학생 링크 #c= / 저장된 주소 / 체험 모드) ===== */
+    const APP_ID = '분류박물관';
+    const isStudentMode = /[#&]c=/.test(location.hash);
+    function readServerUrl(){
+      try {
+        var m=(location.hash||'').match(/[#&]c=([^&]+)/);
+        if(m){ var u=decodeURIComponent(m[1]); localStorage.setItem('appServerUrl', u); return u; }
+        return localStorage.getItem('appServerUrl') || '';
+      } catch(e){ return ''; }
+    }
+    let GAS_URL = readServerUrl();
+
+    /* ===== 체험 모드용 기본 데이터 (선생님이 시트를 연결하면 시트 데이터로 대체) ===== */
+    const DEMO_DATA = {
+      students: Array.from({length:30},(_,i)=>({ '학번':i+1, '이름':'학생'+(i+1), '반':'' })),
+      activity1: [
+        {ID:'i1','아이콘':'✏️','이름':'연필','분류기준ID':'pencil','분류기준라벨':'연필 종류'},
+        {ID:'i2','아이콘':'🖊️','이름':'볼펜','분류기준ID':'pencil','분류기준라벨':'연필 종류'},
+        {ID:'i3','아이콘':'🖍️','이름':'색연필','분류기준ID':'pencil','분류기준라벨':'연필 종류'},
+        {ID:'i4','아이콘':'📏','이름':'자','분류기준ID':'ruler','분류기준라벨':'자 종류'},
+        {ID:'i5','아이콘':'📐','이름':'삼각자','분류기준ID':'ruler','분류기준라벨':'자 종류'},
+        {ID:'i6','아이콘':'📓','이름':'공책','분류기준ID':'book','분류기준라벨':'공책 종류'},
+        {ID:'i7','아이콘':'📒','이름':'노트','분류기준ID':'book','분류기준라벨':'공책 종류'},
+        {ID:'i8','아이콘':'📔','이름':'수첩','분류기준ID':'book','분류기준라벨':'공책 종류'}
+      ],
+      activity2: [
+        {ID:'a1','아이콘':'🐟','이름':'물고기','분류기준ID':'0','분류기준라벨':'다리 0개'},
+        {ID:'a2','아이콘':'🐬','이름':'돌고래','분류기준ID':'0','분류기준라벨':'다리 0개'},
+        {ID:'a3','아이콘':'🐍','이름':'뱀','분류기준ID':'0','분류기준라벨':'다리 0개'},
+        {ID:'a4','아이콘':'🐦','이름':'까치','분류기준ID':'2','분류기준라벨':'다리 2개'},
+        {ID:'a5','아이콘':'🦅','이름':'독수리','분류기준ID':'2','분류기준라벨':'다리 2개'},
+        {ID:'a6','아이콘':'🦉','이름':'부엉이','분류기준ID':'2','분류기준라벨':'다리 2개'},
+        {ID:'a7','아이콘':'🦓','이름':'얼룩말','분류기준ID':'4','분류기준라벨':'다리 4개'},
+        {ID:'a8','아이콘':'🦌','이름':'사슴','분류기준ID':'4','분류기준라벨':'다리 4개'},
+        {ID:'a9','아이콘':'🦏','이름':'코뿔소','분류기준ID':'4','분류기준라벨':'다리 4개'},
+        {ID:'a10','아이콘':'🦁','이름':'사자','분류기준ID':'4','분류기준라벨':'다리 4개'}
+      ],
+      activity3: [
+        {ID:'opt1','아이콘':'💖','보기':'예쁜 블록 / 안 예쁜 블록','정답여부':false,'피드백':"'예쁘다'는 사람마다 달라요."},
+        {ID:'opt2','아이콘':'🎨','보기':'색깔별로 나누기','정답여부':true,'피드백':'맞아요! 색깔은 누가 봐도 똑같아서 좋은 기준이에요.'},
+        {ID:'opt3','아이콘':'🔷','보기':'모양별로 나누기','정답여부':true,'피드백':'딩동댕! 모양도 누가 봐도 똑같이 알 수 있어요.'},
+        {ID:'opt4','아이콘':'😊','보기':'내가 좋아하는 / 싫어하는 블록','정답여부':false,'피드백':"'좋아한다'는 마음은 사람마다 달라요."},
+        {ID:'opt5','아이콘':'📏','보기':'크기별로 나누기','정답여부':true,'피드백':'좋아요! 크기도 누구나 똑같이 비교할 수 있어요.'},
+        {ID:'opt6','아이콘':'✨','보기':'소중한 블록 / 안 소중한 블록','정답여부':false,'피드백':"'소중하다'는 사람마다 달라서 분류 기준이 될 수 없어요."}
+      ],
+      activity4Blocks: [
+        {ID:'b1','색깔':'red','모양':'circle','크기':'big'},{ID:'b2','색깔':'blue','모양':'square','크기':'small'},
+        {ID:'b3','색깔':'yellow','모양':'triangle','크기':'big'},{ID:'b4','색깔':'red','모양':'square','크기':'small'},
+        {ID:'b5','색깔':'blue','모양':'circle','크기':'big'},{ID:'b6','색깔':'yellow','모양':'circle','크기':'small'},
+        {ID:'b7','색깔':'green','모양':'square','크기':'big'},{ID:'b8','색깔':'green','모양':'triangle','크기':'small'}
+      ],
+      preQuestions: [
+        {ID:'pre1','질문':'여러 가지 학용품이 있어요. 어떻게 분류할 수 있을까요? 자유롭게 말해보세요.','예시이미지설명':'학용품 모음'},
+        {ID:'pre2','질문':'동물원에 다양한 동물이 있어요. 동물들을 어떻게 나눌 수 있을까요?','예시이미지설명':'여러 동물'}
+      ],
+      postQuestions: [
+        {ID:'post1','질문':'같은 학용품을 두 가지 다른 기준으로 분류해 볼까요?','예시이미지설명':'학용품 모음'},
+        {ID:'post2','질문':'오늘 배운 것을 활용해서 동물을 분류 기준 두 가지로 나누어 설명해 보세요.','예시이미지설명':'여러 동물'}
+      ]
+    };
+
+    // ================================================
+    //  GAS 통신 함수 (CORS 대응)
+    // ================================================
+    function gasGet(action) {
+      if(!GAS_URL){
+        if(action==='getAllData') return Promise.resolve({ success:true, data:DEMO_DATA });
+        return Promise.resolve({ success:true });
+      }
+      // GET은 CORS OK (no-cors 안 써도 됨)
+      return fetch(GAS_URL + '?action=' + action)
+        .then(r => r.json());
+    }
+
+    function gasPost(payload) {
+      if(!GAS_URL){ return Promise.resolve({ success:true, driveUrl:'' }); }
+      // POST: text/plain으로 보내야 CORS preflight 안 발생
+      return fetch(GAS_URL, {
+        method: 'POST',
+        mode: 'cors',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify(payload),
+        redirect: 'follow'
+      }).then(r => r.json());
+    }
+
+    /* ===== 체험 모드 안내 배너 (#app 높이 줄여 버튼과 안 겹침) ===== */
+    function showDemoBannerIfNeeded(){
+      if(GAS_URL || document.getElementById('__demoBar')) return;
+      var bar=document.createElement('div'); bar.id='__demoBar';
+      bar.style.cssText='position:fixed;left:0;right:0;bottom:0;z-index:2147483000;background:#1f2937;color:#fff;font-size:13px;line-height:1.45;padding:10px 38px calc(10px + env(safe-area-inset-bottom)) 14px;text-align:center;font-family:var(--font-body,sans-serif);box-shadow:0 -2px 10px rgba(0,0,0,0.25);';
+      bar.innerHTML='체험 모드예요 · 활동 기록은 이 기기에만 저장돼요(이어하기 가능). 선생님이 구글 시트를 연결하면 시트에 저장됩니다.';
+      var x=document.createElement('button'); x.textContent='\u2715';
+      x.style.cssText='position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;color:#fff;font-size:16px;cursor:pointer;';
+      x.onclick=function(){ removeDemoBanner(); };
+      bar.appendChild(x); document.body.appendChild(bar);
+      applyBannerSpacing();
+    }
+    function applyBannerSpacing(){
+      var b=document.getElementById('__demoBar'); if(!b) return;
+      var h=(b.offsetHeight||44);
+      document.body.style.paddingBottom=h+'px';
+      var ap=document.getElementById('app'); if(ap){ ap.style.height='calc(100% - '+h+'px)'; }
+    }
+    function removeDemoBanner(){
+      var b=document.getElementById('__demoBar'); if(b) b.remove();
+      document.body.style.paddingBottom='';
+      var ap=document.getElementById('app'); if(ap){ ap.style.height=''; }
+    }
+    function _initDemoBanner(){ try{ showDemoBannerIfNeeded(); }catch(e){} }
+    if(document.readyState==='loading'){ window.addEventListener('DOMContentLoaded', _initDemoBanner); } else { _initDemoBanner(); }
+    window.addEventListener('load', _initDemoBanner);
+
+    /* ===== ⚙️ 선생님 설정(시트 연결 + 학생용 주소) ===== */
+    function ensureSettingsModal(){
+      if(document.getElementById('__cfgModal')) return;
+      var m=document.createElement('div'); m.id='__cfgModal';
+      m.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,0.5);display:none;align-items:center;justify-content:center;z-index:2147483600;padding:16px;';
+      m.innerHTML='<div style="background:#fff;border-radius:20px;padding:24px;max-width:480px;width:100%;box-shadow:0 20px 50px rgba(0,0,0,0.3);font-family:var(--font-body,sans-serif);text-align:left">'
+        +'<h3 style="font-size:22px;font-weight:800;color:#4338CA;margin:0 0 10px">\u2699\ufe0f 선생님 설정</h3>'
+        +'<p style="font-size:14px;color:#475569;margin:0 0 10px;line-height:1.5">구글 시트 웹앱 주소(/exec)를 붙여넣고 연결하면, 학생 활동이 시트에 저장돼요.</p>'
+        +'<input id="__cfgInput" placeholder="https://script.google.com/macros/s/.../exec" style="width:100%;padding:11px;font-size:14px;border:2px solid #C7D2FE;border-radius:11px;margin-bottom:12px;box-sizing:border-box"/>'
+        +'<div style="display:flex;gap:8px;margin-bottom:12px">'
+        +'<button onclick="connectServer()" style="flex:1;background:#6366F1;color:#fff;border:none;border-radius:11px;padding:11px;font-size:16px;font-weight:700;cursor:pointer">연결하기</button>'
+        +'<button onclick="disconnectServer()" style="background:#f1f5f9;color:#475569;border:none;border-radius:11px;padding:11px 16px;font-size:16px;font-weight:700;cursor:pointer">연결 해제</button></div>'
+        +'<div id="__cfgLinkBox" style="display:none;background:#EEF2FF;border:2px solid #C7D2FE;border-radius:11px;padding:12px;margin-bottom:10px">'
+        +'<div style="font-size:13px;color:#4338CA;font-weight:700;margin-bottom:6px">학생용 주소 (학생에게 주세요)</div>'
+        +'<div id="__cfgLink" style="font-size:12px;color:#475569;word-break:break-all;margin-bottom:8px"></div>'
+        +'<button onclick="copyStuLink()" style="background:#10b981;color:#fff;border:none;border-radius:8px;padding:8px 16px;font-size:14px;font-weight:700;cursor:pointer">주소 복사</button></div>'
+        +'<button onclick="closeSettings()" style="width:100%;background:none;border:none;color:#94a3b8;font-size:15px;cursor:pointer;margin-top:4px">닫기</button></div>';
+      m.addEventListener('click',function(e){ if(e.target===m) closeSettings(); });
+      document.body.appendChild(m);
+    }
+    function openSettings(){ ensureSettingsModal(); var i=document.getElementById('__cfgInput'); if(i) i.value=GAS_URL||''; document.getElementById('__cfgModal').style.display='flex'; renderStuLink(); }
+    function closeSettings(){ var m=document.getElementById('__cfgModal'); if(m) m.style.display='none'; }
+    function renderStuLink(){
+      var box=document.getElementById('__cfgLinkBox'), lk=document.getElementById('__cfgLink'); if(!box) return;
+      if(GAS_URL){ lk.textContent=location.origin+location.pathname+'#c='+encodeURIComponent(GAS_URL); box.style.display='block'; }
+      else box.style.display='none';
+    }
+    async function connectServer(){
+      var i=document.getElementById('__cfgInput'); var u=(i?i.value:'').trim();
+      if(!u){ alert('서버 주소를 입력해 주세요'); return; }
+      GAS_URL=u; localStorage.setItem('appServerUrl', u);
+      removeDemoBanner();
+      try{ var res=await gasGet('getAllData'); if(res && res.success) STATE.data=res.data; }catch(e){}
+      renderStuLink();
+      if(typeof screenStudentSelect==='function') screenStudentSelect();
+      alert('연결되었어요! 학생용 주소가 만들어졌어요.');
+    }
+    function copyStuLink(){ var lk=document.getElementById('__cfgLink'); if(!lk||!lk.textContent) return; try{ navigator.clipboard.writeText(lk.textContent); }catch(e){} alert('학생용 주소를 복사했어요!'); }
+    function disconnectServer(){
+      GAS_URL=''; localStorage.removeItem('appServerUrl');
+      var i=document.getElementById('__cfgInput'); if(i) i.value=''; renderStuLink();
+      showDemoBannerIfNeeded();
+      STATE.data=DEMO_DATA;
+      if(typeof screenStudentSelect==='function') screenStudentSelect();
+      alert('연결을 해제했어요 (체험 모드)');
+    }
+
+
+    // ================================================
+    //  전역 상태
+    // ================================================
+    window.STATE = {
+      speakerOn: false,
+      studentId: null,
+      studentName: null,
+      studentClass: null,
+      data: null,
+      scores: { a1: 0, a2: 0, a3: 0, a4: 0 },
+      preRecordings: [],
+      postRecordings: [],
+      startTime: null,
+      selfRating: 0,
+      retryCount: 0,
+      // 자동 수집 통계
+      keyboardCount: 0,    // 키보드만 입력한 녹음 수
+      voiceCount: 0,       // 음성 녹음 수
+      reRecordCount: 0     // 다시 녹음한 횟수
+    };
+
+    // ── 체험 모드 이어하기(학생별 활동 점수 저장/복원) ──
+    function _catKey(){ return 'progress:분류박물관:'+(STATE.studentName||''); }
+    function _catSave(){ try{ if(!STATE.studentName) return; var sc=STATE.scores; if(sc.a1>0&&sc.a2>0&&sc.a3>0&&sc.a4>0){ localStorage.removeItem(_catKey()); } else { localStorage.setItem(_catKey(), JSON.stringify(sc)); } }catch(e){} }
+    function _catLoad(){ try{ if(!STATE.studentName) return; var raw=localStorage.getItem(_catKey()); if(raw){ var o=JSON.parse(raw); STATE.scores=Object.assign({a1:0,a2:0,a3:0,a4:0}, o); } }catch(e){} }
+
+    // ================================================
+    //  스피커 / TTS / 효과음
+    // ================================================
+    function toggleSpeaker() {
+      STATE.speakerOn = !STATE.speakerOn;
+      document.querySelectorAll('.speaker-toggle').forEach(btn => {
+        btn.classList.toggle('on', STATE.speakerOn);
+        btn.innerHTML = STATE.speakerOn ? ICONS.speakerOn : ICONS.speakerOff;
+      });
+      if (!STATE.speakerOn && window.speechSynthesis) {
+        window.speechSynthesis.cancel();
+      }
+      if (STATE.speakerOn) {
+        // 스피커 켜는 순간 안내 + 현재 화면 다시 읽어주기
+        playSfx('click');
+        speak('소리가 켜졌어요');
+        // 현재 화면 안내 음성 다시 재생
+        if (window._lastAutoReadText) {
+          setTimeout(() => speakSlow(window._lastAutoReadText), 1200);
+        }
+      }
+    }
+
+    // 한국어 자연스러운 여성 음성 우선순위 (자연스러움 순)
+    const KOREAN_FEMALE_VOICES = [
+      // 1순위: Google의 자연스러운 음성 (Android Chrome 기본)
+      'Google 한국의',
+      'Google Korean',
+      'ko-KR-Wavenet-A',     // Google Cloud Wavenet (가장 자연스러움)
+      'ko-KR-Wavenet-B',
+      'ko-KR-Neural2-A',     // Google Cloud Neural2
+      // 2순위: Apple의 자연스러운 한국어 (iOS/macOS)
+      'Yuna',                // 기본 한국어 여성
+      'Yuna (Premium)',
+      'Yuna (Enhanced)',
+      // 3순위: Microsoft Azure Neural (Windows Edge)
+      'Microsoft Heami Online',  // Neural - 자연스러움
+      'Microsoft SunHi Online',
+      'Microsoft Heami',
+      'Microsoft SunHi',
+    ];
+    
+    let cachedKoreanVoice = null;
+    
+    function pickKoreanVoice() {
+      if (cachedKoreanVoice) return cachedKoreanVoice;
+      const voices = window.speechSynthesis.getVoices();
+      if (!voices || voices.length === 0) return null;
+      
+      // 1순위: Google 한국어 (가장 자연스러움 - localService=false인 클라우드 음성)
+      const googleKo = voices.find(v => 
+        v.lang === 'ko-KR' && 
+        v.name.toLowerCase().includes('google') &&
+        !v.localService  // 클라우드 음성이 더 자연스러움
+      );
+      if (googleKo) { cachedKoreanVoice = googleKo; return googleKo; }
+      
+      // 2순위: 우선순위 리스트의 자연스러운 음성
+      for (const name of KOREAN_FEMALE_VOICES) {
+        const found = voices.find(v => 
+          (v.name === name || v.name.includes(name) || v.voiceURI.includes(name)) &&
+          (v.lang === 'ko-KR' || v.lang.startsWith('ko'))
+        );
+        if (found) { cachedKoreanVoice = found; return found; }
+      }
+      
+      // 3순위: Wavenet/Neural/Premium 키워드 포함 (자연스러움)
+      let voice = voices.find(v => 
+        (v.lang === 'ko-KR' || v.lang.startsWith('ko')) &&
+        /wavenet|neural|premium|enhanced|natural/i.test(v.name)
+      );
+      if (voice) { cachedKoreanVoice = voice; return voice; }
+      
+      // 4순위: ko-KR + 여성 키워드
+      voice = voices.find(v => 
+        (v.lang === 'ko-KR' || v.lang.startsWith('ko')) && 
+        /female|woman|여/i.test(v.name)
+      );
+      if (voice) { cachedKoreanVoice = voice; return voice; }
+      
+      // 5순위: 아무 ko-KR (마지막 fallback)
+      voice = voices.find(v => v.lang === 'ko-KR' || v.lang.startsWith('ko'));
+      if (voice) { cachedKoreanVoice = voice; return voice; }
+      
+      return null;
+    }
+    
+    // 음성 목록을 미리 로드 (브라우저가 비동기로 로드함)
+    if (window.speechSynthesis) {
+      window.speechSynthesis.getVoices(); // 초기 로드 트리거
+      window.speechSynthesis.addEventListener('voiceschanged', () => {
+        cachedKoreanVoice = null; // 캐시 무효화
+        pickKoreanVoice();
+      });
+    }
+
+    /**
+     * 자연스러운 한국어 여성 음성 (유치원 선생님 톤)
+     * - rate 0.95: 약간만 천천히 (저학년이 알아듣기 쉽게)
+     * - pitch 1.0: 기본 피치 (높이지 않아 갈라짐 없음)
+     */
+    function speak(text, rate = 0.95, pitch = 1.0) {
+      if (!STATE.speakerOn) return;
+      if (!window.speechSynthesis || !text) return;
+      
+      const synth = window.speechSynthesis;
+      // 진행 중인 음성 멈춤
+      if (synth.speaking || synth.pending) synth.cancel();
+      
+      // 텍스트 정제 - 이모지 제거 (음성으로 읽으면 어색)
+      const cleanText = String(text)
+        .replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/gu, '')
+        .replace(/[!?.,]+/g, '$&')
+        .replace(/\s+/g, ' ')
+        .trim();
+      if (!cleanText) return;
+      
+      const u = new SpeechSynthesisUtterance(cleanText);
+      const voice = pickKoreanVoice();
+      if (voice) u.voice = voice;
+      u.rate = rate;
+      u.pitch = pitch;
+      u.volume = 1.0;
+      u.lang = 'ko-KR';
+      
+      // 살짝 지연 후 재생 (이전 cancel이 완료되도록)
+      setTimeout(() => {
+        try { synth.speak(u); } catch(e) { console.warn('TTS error:', e); }
+      }, 100);
+    }
+    
+    // 천천히 또박또박 (중요한 안내용) - 피치 그대로
+    function speakSlow(text) {
+      speak(text, 0.9, 1.0);
+    }
+
+    let audioCtx = null;
+    function getAudioCtx() {
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      return audioCtx;
+    }
+    function playSfx(type) {
+      if (!STATE.speakerOn) return;
+      try {
+        const ctx = getAudioCtx();
+        if (ctx.state === 'suspended') ctx.resume();
+        const now = ctx.currentTime;
+        if (type === 'correct') {
+          [523.25, 659.25, 783.99].forEach((freq, i) => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'sine'; osc.frequency.value = freq;
+            osc.connect(gain); gain.connect(ctx.destination);
+            const t = now + i * 0.1;
+            gain.gain.setValueAtTime(0, t);
+            gain.gain.linearRampToValueAtTime(0.2, t + 0.02);
+            gain.gain.exponentialRampToValueAtTime(0.001, t + 0.3);
+            osc.start(t); osc.stop(t + 0.3);
+          });
+        } else if (type === 'wrong') {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'square';
+          osc.frequency.setValueAtTime(220, now);
+          osc.frequency.linearRampToValueAtTime(150, now + 0.3);
+          osc.connect(gain); gain.connect(ctx.destination);
+          gain.gain.setValueAtTime(0.15, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
+          osc.start(now); osc.stop(now + 0.4);
+        } else if (type === 'success') {
+          [523.25, 659.25, 783.99, 1046.5].forEach((freq, i) => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'triangle'; osc.frequency.value = freq;
+            osc.connect(gain); gain.connect(ctx.destination);
+            const t = now + i * 0.08;
+            gain.gain.setValueAtTime(0, t);
+            gain.gain.linearRampToValueAtTime(0.25, t + 0.02);
+            gain.gain.exponentialRampToValueAtTime(0.001, t + 0.5);
+            osc.start(t); osc.stop(t + 0.5);
+          });
+        } else if (type === 'click') {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'sine'; osc.frequency.value = 800;
+          osc.connect(gain); gain.connect(ctx.destination);
+          gain.gain.setValueAtTime(0.1, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
+          osc.start(now); osc.stop(now + 0.1);
+        }
+      } catch (e) { console.log('SFX error:', e); }
+    }
+
+    function fireConfetti() {
+      const canvas = document.getElementById('confetti-canvas');
+      if (!canvas) return;
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      const ctx = canvas.getContext('2d');
+      const colors = ['#FBBF24', '#EC4899', '#10B981', '#6366F1', '#F97316', '#8B5CF6', '#EF4444'];
+      // 모양 타입: 0=사각형, 1=원, 2=별, 3=하트
+      const particles = [];
+      for (let i = 0; i < 120; i++) {
+        particles.push({
+          x: canvas.width / 2 + (Math.random() - 0.5) * 100, 
+          y: canvas.height / 2,
+          vx: (Math.random() - 0.5) * 18,
+          vy: (Math.random() - 0.8) * 18,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          size: Math.random() * 10 + 6,
+          rotation: Math.random() * 360,
+          vRot: (Math.random() - 0.5) * 12,
+          opacity: 1,
+          shape: Math.floor(Math.random() * 4)
+        });
+      }
+      function drawStar(ctx, size) {
+        ctx.beginPath();
+        for (let i = 0; i < 5; i++) {
+          const angle = (i * 144 - 90) * Math.PI / 180;
+          const r = i === 0 ? size : size * 0.5;
+          const x2 = Math.cos(angle) * size;
+          const y2 = Math.sin(angle) * size;
+          if (i === 0) ctx.moveTo(x2, y2);
+          else ctx.lineTo(x2, y2);
+          const innerAngle = ((i * 144) + 72 - 90) * Math.PI / 180;
+          ctx.lineTo(Math.cos(innerAngle) * size * 0.4, Math.sin(innerAngle) * size * 0.4);
+        }
+        ctx.closePath();
+        ctx.fill();
+      }
+      function drawHeart(ctx, size) {
+        ctx.beginPath();
+        ctx.moveTo(0, size * 0.3);
+        ctx.bezierCurveTo(0, -size * 0.2, -size, -size * 0.2, -size, size * 0.2);
+        ctx.bezierCurveTo(-size, size * 0.6, 0, size * 0.9, 0, size);
+        ctx.bezierCurveTo(0, size * 0.9, size, size * 0.6, size, size * 0.2);
+        ctx.bezierCurveTo(size, -size * 0.2, 0, -size * 0.2, 0, size * 0.3);
+        ctx.fill();
+      }
+      let frame = 0;
+      function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        particles.forEach(p => {
+          p.x += p.vx; p.y += p.vy; p.vy += 0.4;
+          p.rotation += p.vRot; p.opacity -= 0.010;
+          if (p.opacity <= 0) return;
+          ctx.save();
+          ctx.translate(p.x, p.y);
+          ctx.rotate(p.rotation * Math.PI / 180);
+          ctx.globalAlpha = Math.max(0, p.opacity);
+          ctx.fillStyle = p.color;
+          if (p.shape === 0) {
+            ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
+          } else if (p.shape === 1) {
+            ctx.beginPath();
+            ctx.arc(0, 0, p.size / 2, 0, Math.PI * 2);
+            ctx.fill();
+          } else if (p.shape === 2) {
+            drawStar(ctx, p.size * 0.7);
+          } else {
+            drawHeart(ctx, p.size * 0.6);
+          }
+          ctx.restore();
+        });
+        frame++;
+        if (frame < 120) requestAnimationFrame(animate);
+        else ctx.clearRect(0, 0, canvas.width, canvas.height);
+      }
+      animate();
+    }
+
+    // ================================================
+    //  아이콘
+    // ================================================
+    const ICONS = {
+      speakerOn: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>',
+      speakerOff: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>',
+      arrow: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>',
+      mic: '<svg width="48" height="48" viewBox="0 0 24 24" fill="currentColor"><path d="M12 14c1.66 0 2.99-1.34 2.99-3L15 5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/><path d="M17.3 11c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.48 6-3.3 6-6.72h-1.7z"/></svg>',
+      stop: '<svg width="48" height="48" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>',
+      retry: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>',
+      trophy: '<svg width="48" height="48" viewBox="0 0 24 24" fill="currentColor"><path d="M7 4V2h10v2h4v3a4 4 0 0 1-4 4h-.34a6.96 6.96 0 0 1-3.66 4.32V18h3v3H8v-3h3v-2.68A6.96 6.96 0 0 1 7.34 11H7a4 4 0 0 1-4-4V4h4zm0 2H5v1a2 2 0 0 0 2 2V6zm10 0v3a2 2 0 0 0 2-2V6h-2z"/></svg>',
+      edit: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>',
+      wand: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 4V2"/><path d="M15 16v-2"/><path d="M8 9h2"/><path d="M20 9h2"/><path d="M3 21l9-9"/></svg>'
+    };
+    
+    // 별 SVG - 깔끔한 3D 스타일 (회색/노란색 명확히)
+    function StarSvg() {
+      return `
+        <svg class="star-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+          <path class="star-shadow" d="M50 12 L61 38 L88 41 L68 60 L74 88 L50 73 L26 88 L32 60 L12 41 L39 38 Z" 
+                transform="translate(2, 4)"/>
+          <path class="star-fill" d="M50 12 L61 38 L88 41 L68 60 L74 88 L50 73 L26 88 L32 60 L12 41 L39 38 Z"/>
+        </svg>
+      `;
+    }
+
+    // ================================================
+    //  마스코트 SVG
+    // ================================================
+    function FairySvg(mood = 'happy', size = 80) {
+      const mouth = mood === 'happy' 
+        ? '<path d="M55 75 Q60 80 65 75" stroke="white" stroke-width="2.5" stroke-linecap="round" fill="none"/>'
+        : mood === 'sad'
+        ? '<path d="M55 80 Q60 75 65 80" stroke="white" stroke-width="2.5" stroke-linecap="round" fill="none"/>'
+        : '<path d="M55 78 L65 78" stroke="white" stroke-width="2.5" stroke-linecap="round"/>';
+      return `
+        <svg width="${size}" height="${size * 1.2}" viewBox="0 0 120 150" fill="none" style="animation: float 2.5s ease-in-out infinite;">
+          <defs>
+            <linearGradient id="fairyBody-${size}" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#818CF8"/>
+              <stop offset="100%" stop-color="#6366F1"/>
+            </linearGradient>
+          </defs>
+          <ellipse cx="60" cy="135" rx="22" ry="4" fill="#000" opacity="0.1"/>
+          <path d="M40 50 Q60 30 80 50 L80 110 Q60 125 40 110 Z" fill="url(#fairyBody-${size})" stroke="#4338CA" stroke-width="3"/>
+          <path d="M30 60 Q15 50 20 80 Q15 100 35 95" fill="#C7D2FE" opacity="0.85" stroke="#6366F1" stroke-width="2"/>
+          <path d="M90 60 Q105 50 100 80 Q105 100 85 95" fill="#C7D2FE" opacity="0.85" stroke="#6366F1" stroke-width="2"/>
+          <circle cx="52" cy="62" r="3.5" fill="white"/>
+          <circle cx="68" cy="62" r="3.5" fill="white"/>
+          <circle cx="52" cy="62" r="1.5" fill="#1E293B"/>
+          <circle cx="68" cy="62" r="1.5" fill="#1E293B"/>
+          ${mouth}
+          <circle cx="60" cy="40" r="6" fill="#FBBF24" stroke="#F59E0B" stroke-width="2"/>
+          <path d="M60 25 L62 35 L60 32 L58 35 Z" fill="#FBBF24"/>
+        </svg>
+      `;
+    }
+
+    function BlockSvg(block, sizePx = 56) {
+      const colorMap = { red: '#EF4444', blue: '#3B82F6', yellow: '#FBBF24', green: '#10B981' };
+      const strokeMap = { red: '#B91C1C', blue: '#1D4ED8', yellow: '#D97706', green: '#047857' };
+      // 모든 블록 같은 크기 (크기 기준 제거됨)
+      const renderSize = sizePx;
+      const color = block.색깔 || block.color;
+      const shape = block.모양 || block.shape;
+      const fill = colorMap[color], stroke = strokeMap[color];
+      let svgInner = '';
+      if (shape === 'circle') svgInner = `<circle cx="30" cy="30" r="25" fill="${fill}" stroke="${stroke}" stroke-width="3"/>`;
+      if (shape === 'square') svgInner = `<rect x="7" y="7" width="46" height="46" rx="3" fill="${fill}" stroke="${stroke}" stroke-width="3"/>`;
+      if (shape === 'triangle') svgInner = `<polygon points="30,8 54,52 6,52" fill="${fill}" stroke="${stroke}" stroke-width="3" stroke-linejoin="round"/>`;
+      return `<svg class="block-svg" width="${renderSize}" height="${renderSize}" viewBox="0 0 60 60">${svgInner}</svg>`;
+    }
+
+    // ================================================
+    //  공통 컴포넌트
+    // ================================================
+    function renderHeader(opts) {
+      const { number, title, criterionLabel, fixed } = opts;
+      return `
+        <div class="activity-header">
+          <span class="activity-badge">활동 ${number}</span>
+          <h2 class="activity-title">${title}</h2>
+          ${criterionLabel ? `
+            <div class="criterion-box">
+              <span class="criterion-label">분류 기준</span>
+              <span class="criterion-value">${criterionLabel}</span>
+              ${fixed ? '<span class="criterion-lock">🔒</span>' : ''}
+            </div>
+          ` : ''}
+          <button class="speaker-toggle ${STATE.speakerOn ? 'on' : ''}" onclick="toggleSpeaker()">
+            ${STATE.speakerOn ? ICONS.speakerOn : ICONS.speakerOff}
+          </button>
+        </div>
+      `;
+    }
+
+    function renderTutorial(text) {
+      return `
+        <div class="tutorial-banner">
+          <span class="tutorial-icon">💡</span>
+          <span class="tutorial-text">${text}</span>
+        </div>
+      `;
+    }
+
+    function renderFeedback(mainText, mood = 'thinking', subText = '') {
+      return `
+        <div class="feedback-area" id="feedback-area">
+          ${FairySvg(mood, 44)}
+          <div class="feedback-content">
+            <p class="feedback-text ${mood}" id="feedback-main">${mainText}</p>
+            ${subText ? `<p class="feedback-sub" id="feedback-sub">${subText}</p>` : ''}
+          </div>
+        </div>
+      `;
+    }
+
+    function updateFeedback(mainText, mood = 'thinking', subText = '') {
+      const area = document.getElementById('feedback-area');
+      if (!area) return;
+      area.innerHTML = `${FairySvg(mood, 44)}<div class="feedback-content">
+        <p class="feedback-text ${mood}">${mainText}</p>
+        ${subText ? `<p class="feedback-sub">${subText}</p>` : ''}
+      </div>`;
+    }
+
+    function showModal(html) {
+      const backdrop = document.createElement('div');
+      backdrop.className = 'modal-backdrop';
+      backdrop.innerHTML = `<div class="modal-content">${html}</div>`;
+      document.body.appendChild(backdrop);
+      return backdrop;
+    }
+
+    function closeModal() {
+      document.querySelectorAll('.modal-backdrop').forEach(m => m.remove());
+    }
+
+    function showScreen(html) {
+      document.getElementById('app').innerHTML = `<div class="screen">${html}</div>`;
+      // 화면 전환 시 진행 중인 음성 멈춤
+      if (window.speechSynthesis) window.speechSynthesis.cancel();
+    }
+    
+    /**
+     * 화면이 그려진 후 안내 음성을 자동 재생
+     * - 튜토리얼 텍스트 + 메인 안내문 읽어줌
+     */
+    function autoReadScreen(text) {
+      // 마지막 안내 텍스트 저장 (스피커 켤 때 다시 읽어주기 위해)
+      window._lastAutoReadText = text;
+      if (!STATE.speakerOn) return;
+      // 화면 그려진 후 약간 지연 후 읽음 (애니메이션 시작 후)
+      setTimeout(() => {
+        const div = document.createElement('div');
+        div.innerHTML = text;
+        const cleanText = div.textContent || div.innerText || '';
+        speakSlow(cleanText);
+      }, 400);
+    }
+
+    function shuffle(arr) {
+      return [...arr].sort(() => Math.random() - 0.5);
+    }
+
+    // ================================================
+    //  클릭+드래그 시스템 (저학년 친화)
+    // ================================================
+    
+    // 전역: 현재 선택된 아이템
+    window.SELECTED_ITEM = null;
+    window.SELECTED_ON_DROP = null;
+    
+    function makeDraggable(element, onDrop) {
+      let isDragging = false;
+      let didMove = false;
+      let startX, startY;
+      let offsetX, offsetY;
+      let placeholder;
+      
+      function getEvent(e) {
+        if (e.touches) return e.touches[0] || e.changedTouches[0];
+        return e;
+      }
+      
+      function start(e) {
+        const evt = getEvent(e);
+        startX = evt.clientX;
+        startY = evt.clientY;
+        didMove = false;
+        isDragging = true;
+        const rect = element.getBoundingClientRect();
+        offsetX = evt.clientX - rect.left;
+        offsetY = evt.clientY - rect.top;
+        // 드래그용 placeholder는 실제 움직이기 시작할 때 생성
+        e.preventDefault();
+      }
+      
+      function move(e) {
+        if (!isDragging) return;
+        const evt = getEvent(e);
+        const dx = Math.abs(evt.clientX - startX);
+        const dy = Math.abs(evt.clientY - startY);
+        // 5px 이상 움직였을 때만 드래그 시작
+        if (!didMove && (dx > 5 || dy > 5)) {
+          didMove = true;
+          const rect = element.getBoundingClientRect();
+          // placeholder는 원래 위치 유지용
+          placeholder = element.cloneNode(true);
+          placeholder.style.visibility = 'hidden';
+          element.parentNode.insertBefore(placeholder, element);
+          // 원래 부모 정보 저장 (복귀용)
+          element._originalParent = placeholder.parentNode;
+          element._originalNextSibling = placeholder.nextSibling;
+          // body로 옮겨서 overflow:hidden 영향 안 받게
+          document.body.appendChild(element);
+          element.style.position = 'fixed';
+          element.style.zIndex = '99999';
+          element.style.left = rect.left + 'px';
+          element.style.top = rect.top + 'px';
+          element.style.width = rect.width + 'px';
+          element.style.pointerEvents = 'none'; // 드래그 중 클릭 방해 안 됨
+          element.classList.add('dragging');
+        }
+        if (didMove) {
+          element.style.left = (evt.clientX - offsetX) + 'px';
+          element.style.top = (evt.clientY - offsetY) + 'px';
+          document.querySelectorAll('.drop-bin').forEach(z => z.classList.remove('drag-over'));
+          const dropZone = findDropZoneAt(evt.clientX, evt.clientY);
+          if (dropZone) dropZone.classList.add('drag-over');
+          e.preventDefault();
+        }
+      }
+      
+      function end(e) {
+        if (!isDragging) return;
+        isDragging = false;
+        const evt = getEvent(e);
+        
+        if (didMove) {
+          // 드래그 종료
+          document.querySelectorAll('.drop-bin').forEach(z => z.classList.remove('drag-over'));
+          const dropZone = findDropZoneAt(evt.clientX, evt.clientY);
+          // 스타일 초기화
+          element.style.position = '';
+          element.style.zIndex = '';
+          element.style.left = '';
+          element.style.top = '';
+          element.style.width = '';
+          element.style.pointerEvents = '';
+          element.classList.remove('dragging');
+          // 원래 자리로 복귀 (handleDrop에서 처리할 수도 있게)
+          if (element._originalParent && placeholder) {
+            element._originalParent.insertBefore(element, placeholder);
+          }
+          if (placeholder) { placeholder.remove(); placeholder = null; }
+          element._originalParent = null;
+          element._originalNextSibling = null;
+          if (dropZone && onDrop) onDrop(dropZone.id, dropZone);
+        } else {
+          handleItemClick(element, onDrop);
+        }
+      }
+      
+      function findDropZoneAt(x, y) {
+        const elements = document.elementsFromPoint(x, y);
+        return elements.find(el => el.classList && el.classList.contains('drop-bin'));
+      }
+      
+      element.addEventListener('mousedown', start);
+      element.addEventListener('touchstart', start, { passive: false });
+      document.addEventListener('mousemove', move);
+      document.addEventListener('touchmove', move, { passive: false });
+      document.addEventListener('mouseup', end);
+      document.addEventListener('touchend', end);
+    }
+    
+    // 클릭 방식 처리
+    function handleItemClick(element, onDrop) {
+      playSfx('click');
+      // 이미 선택된 아이템 다시 누르면 해제
+      if (SELECTED_ITEM === element) {
+        clearSelection();
+        return;
+      }
+      // 이전 선택 해제
+      clearSelection();
+      // 새로 선택
+      SELECTED_ITEM = element;
+      SELECTED_ON_DROP = onDrop;
+      element.classList.add('selected');
+      // 모든 분류함을 클릭 가능 모드로
+      document.querySelectorAll('.drop-bin').forEach(bin => {
+        bin.classList.add('click-target');
+        bin.addEventListener('click', binClickHandler);
+      });
+      // 활동의 탐구 질문이 있으면 메인으로 표시 (큰 글씨)
+      const inquiry = window.CURRENT_INQUIRY_QUESTION;
+      const itemName = element.querySelector('.item-name')?.textContent || '';
+      if (inquiry) {
+        // 탐구 질문 + 아이템 이름 → 큰 글씨
+        const mainMsg = itemName ? `${inquiry.replace('🤔', '🤔 <span class="hi-yellow">' + itemName + '</span>은(는)')}` : inquiry;
+        updateFeedback(mainMsg, 'thinking', '👆 알맞은 분류함을 콕! 눌러봐요');
+        // 음성으로도 안내
+        if (itemName) {
+          speak(`${itemName}은요? ${inquiry.replace(/🤔|❓/g, '')}`);
+        } else {
+          speak(inquiry.replace(/🤔|❓/g, ''));
+        }
+      } else {
+        updateFeedback('👆 분류함을 콕! 눌러봐요', 'thinking');
+      }
+    }
+    
+    function binClickHandler(e) {
+      const bin = e.currentTarget;
+      if (!SELECTED_ITEM || !SELECTED_ON_DROP) return;
+      const onDrop = SELECTED_ON_DROP;
+      const elem = SELECTED_ITEM;
+      const binId = bin.id;
+      clearSelection();
+      onDrop(binId, bin);
+    }
+    
+    function clearSelection() {
+      if (SELECTED_ITEM) {
+        SELECTED_ITEM.classList.remove('selected');
+      }
+      SELECTED_ITEM = null;
+      SELECTED_ON_DROP = null;
+      document.querySelectorAll('.drop-bin').forEach(bin => {
+        bin.classList.remove('click-target');
+        bin.removeEventListener('click', binClickHandler);
+      });
+    }
+
+    // ================================================
+    //  화면들
+    // ================================================
+    function screenIntro() {
+      showScreen(`
+        <div style="flex:1; display:flex; align-items:center; justify-content:center; width:100%;">
+          <div class="intro-card">
+            ${FairySvg('happy', 80)}
+            <h1 class="intro-title">창의 분류 박물관</h1>
+            <p class="intro-subtitle">
+              안녕 친구들! <span class="hi-yellow"><strong>분류하기</strong></span>를 배워봐요
+            </p>
+            <div style="background:#FFFBEB; border:3px solid #FCD34D; border-radius:18px; padding:clamp(10px, 1.5vh, 14px); margin-bottom:clamp(12px, 1.8vh, 18px);">
+              <div class="intro-grid">
+                <div class="intro-card-mini c1">📦 학용품</div>
+                <div class="intro-card-mini c2">🦓 동물</div>
+                <div class="intro-card-mini c3">🎯 기준 찾기</div>
+                <div class="intro-card-mini c4">🧱 자유 분류</div>
+              </div>
+            </div>
+            <button class="btn-main" onclick="askMicPermission()">
+              시작하기
+            </button>
+          </div>
+        </div>
+      `);
+      autoReadScreen('안녕 친구들! 분류하기를 배워봐요. 시작하기 버튼을 눌러주세요.');
+    }
+    
+    /* 마이크 권한 요청 - 한 번만 묻기 */
+    async function askMicPermission() {
+      playSfx('click');
+      
+      // 이미 이번 세션에서 물어봤으면 바로 진행
+      let micAsked = false;
+      try { micAsked = !!localStorage.getItem('micAsked'); } catch(e) {}
+      if (micAsked) {
+        screenStudentSelect();
+        return;
+      }
+      
+      // Permissions API로 현재 권한 상태 확인 (지원 브라우저)
+      if (navigator.permissions) {
+        try {
+          const result = await navigator.permissions.query({ name: 'microphone' });
+          if (result.state === 'granted') {
+            // 이미 허용됨 - 바로 진행
+            STATE.micGranted = true;
+            try { localStorage.setItem('micAsked', '1'); } catch(e) {}
+            screenStudentSelect();
+            return;
+          }
+          if (result.state === 'denied') {
+            // 영구 거부됨 - 다시 묻지 않고 안내만
+            try { localStorage.setItem('micAsked', '1'); } catch(e) {}
+            STATE.micGranted = false;
+            screenStudentSelect();
+            return;
+          }
+          // result.state === 'prompt' → 아래에서 한 번만 요청
+        } catch (e) {
+          // Permissions API 미지원 - 그냥 진행
+        }
+      }
+      
+      // 권한 요청 (브라우저 팝업이 한 번 뜸)
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        stream.getTracks().forEach(t => t.stop()); // 즉시 멈춤
+        STATE.micGranted = true;
+        try { localStorage.setItem('micAsked', '1'); } catch(e) {}
+        screenStudentSelect();
+      } catch (err) {
+        // 거부됐거나 마이크 없음 - 안내 후 진행
+        STATE.micGranted = false;
+        try { localStorage.setItem('micAsked', '1'); } catch(e) {}
+        screenStudentSelect();
+      }
+    }
+
+    function screenStudentSelect() {
+      playSfx('click');
+      const students = STATE.data.students || [];
+      
+      const studentOptions = students.map(s => {
+        const num = String(s.학번 || '').replace(/[^\d]/g, '');
+        const name = String(s.이름 || '');
+        return { num: num, name: name, raw: s };
+      }).filter(s => s.name);
+      
+      showScreen(`
+        ${renderTutorial('<strong>내 이름</strong>을 골라주세요!')}
+        <div style="flex:1; display:flex; align-items:center; justify-content:center; width:100%;">
+          <div class="record-card">
+            <div style="font-size:clamp(70px, 10vh, 100px); line-height:1;">🎒</div>
+            <h1 class="intro-title" style="margin:clamp(8px, 1.5vh, 14px) 0;">누구인가요?</h1>
+            
+            <div class="name-select-wrap">
+              <label class="name-select-label" for="student-select">👤 내 이름</label>
+              <select id="student-select" class="name-select" onchange="onStudentChange(this.value)">
+                <option value="">-- 골라주세요 --</option>
+                ${studentOptions.map(s => 
+                  `<option value="${s.num}">${s.num}번 ${s.name}</option>`
+                ).join('')}
+              </select>
+            </div>
+            
+            <button id="start-student-btn" class="btn-main" disabled onclick="confirmStudent()">
+              🌟 시작하기 🌟
+            </button>
+            ${isStudentMode?'':'<button onclick="openSettings()" style="margin-top:12px;background:rgba(255,255,255,0.85);border:2px solid #C7D2FE;border-radius:999px;padding:8px 18px;font-size:clamp(20px,2.4vh,26px);color:#4338CA;font-weight:700;cursor:pointer">⚙️ 선생님 설정</button>'}
+          </div>
+        </div>
+        <div style="display:flex; justify-content:center; flex-shrink:0;">
+          <button class="speaker-toggle ${STATE.speakerOn ? 'on' : ''}" onclick="toggleSpeaker()">
+            ${STATE.speakerOn ? ICONS.speakerOn : ICONS.speakerOff}
+          </button>
+        </div>
+      `);
+      
+      // 학생 옵션을 전역에 저장
+      window._studentOptions = studentOptions;
+      window._selectedStudent = null;
+      
+      if (studentOptions.length === 0) {
+        showModal(`
+          <div style="font-size:80px; line-height:1;">😢</div>
+          <h2 class="modal-title">학생 명단이 비어있어요!</h2>
+          <p class="modal-body">선생님께 알려주세요!</p>
+          <button class="btn-secondary" onclick="closeModal()">알겠어요</button>
+        `);
+      } else {
+        autoReadScreen('누구인가요? 내 이름을 골라주세요.');
+      }
+    }
+    
+    /* 표준 select 드롭다운 변경 핸들러 */
+    window.onStudentChange = function(value) {
+      const startBtn = document.getElementById('start-student-btn');
+      if (!value) {
+        window._selectedStudent = null;
+        if (startBtn) startBtn.disabled = true;
+        return;
+      }
+      const opts = window._studentOptions || [];
+      const found = opts.find(s => s.num === value);
+      if (!found) return;
+      playSfx('click');
+      window._selectedStudent = { num: found.num, name: found.name };
+      if (startBtn) startBtn.disabled = false;
+    };
+    
+    window.confirmStudent = function() {
+      playSfx('click');
+      const sel = window._selectedStudent;
+      if (!sel) return;
+      const student = (STATE.data.students || []).find(s => 
+        String(s.학번).replace(/[^\d]/g, '') === String(sel.num)
+      );
+      if (!student) return;
+      selectStudent(student.학번, student.이름, student.반 || '');
+    };
+    
+    function selectStudent(id, name, cls) {
+      playSfx('click');
+      STATE.studentId = id;
+      STATE.studentName = name;
+      STATE.studentClass = cls;
+      STATE.startTime = Date.now();
+      _catLoad();
+      screenWelcomeTutorial();
+    }
+
+    function screenWelcomeTutorial() {
+      showScreen(`
+        <div style="flex:1; display:flex; align-items:center; justify-content:center; width:100%;">
+          <div class="intro-card">
+            <div style="font-size: clamp(70px, 10vh, 100px); line-height:1;">👋</div>
+            <h1 class="intro-title">
+              <span class="text-pink">${STATE.studentName}</span> 친구, 반가워요!
+            </h1>
+            <p class="intro-subtitle">
+              지금부터 <span class="hi-yellow"><strong>분류하기</strong></span>를 배워봐요
+            </p>
+            <div style="background:#FFF0F5; border:3px solid #FBCFE8; border-radius:18px; padding:clamp(14px, 2vh, 20px); margin-bottom:clamp(14px, 2vh, 20px);">
+              <p style="color:#9F1239; font-family:var(--font-display); font-size: clamp(26px, 3.2vh, 32px); line-height:1.5;">
+                천천히 차근차근 해봐요<br/>
+                틀려도 괜찮아요
+              </p>
+            </div>
+            <button class="btn-main" onclick="screenPreRecord(0)">
+              시작하기
+            </button>
+          </div>
+        </div>
+      `);
+      autoReadScreen(`${STATE.studentName} 친구 반가워요. 지금부터 분류하기를 배워봐요. 천천히 차근차근 해봐요. 틀려도 괜찮아요.`);
+    }
+
+    // ================================================
+    //  녹음 화면
+    // ================================================
+    let mediaRecorder = null;
+    let recordedChunks = [];
+    let speechRecognition = null;
+    let currentTranscript = '';
+
+    /**
+     * STT 텍스트 정제 - 잡음 제거
+     */
+    function cleanTranscript(text) {
+      if (!text) return '';
+      let cleaned = String(text);
+      // 1. T로 시작하는 모든 패턴 제거 (T1234, T12:34, t123 등)
+      cleaned = cleaned.replace(/\b[Tt]\d+[:\-\d]*\b/g, '');
+      // 2. 숫자T 형태 (1234T 등) 제거
+      cleaned = cleaned.replace(/\b\d+[Tt]\b/g, '');
+      // 3. 영문 한 글자+숫자 조합 (P12, X9, A1 등) 제거
+      cleaned = cleaned.replace(/\b[A-Za-z]\d{1,}\b/g, '');
+      // 4. 숫자만 4자리 이상 연속 (타임스탬프성) 제거
+      cleaned = cleaned.replace(/\b\d{4,}\b/g, '');
+      // 5. 단독 영문 한 글자 제거 (한국어에서 의미 없음)
+      cleaned = cleaned.replace(/(?:^|\s)[A-Za-z](?=\s|$|[가-힣])/g, ' ');
+      // 6. ISO 8601 시간 형식 (12:34, 12:34:56) 제거
+      cleaned = cleaned.replace(/\b\d{1,2}:\d{2}(?::\d{2})?\b/g, '');
+      // 7. 연속된 공백 정리
+      cleaned = cleaned.replace(/\s+/g, ' ').trim();
+      return cleaned;
+    }
+
+    function screenPreRecord(idx) { recordView('pre', idx); }
+    function screenPostRecord(idx) { recordView('post', idx); }
+
+    /* 사전·사후 질문에 대한 예시/힌트 */
+    function getRecordingHint(phase, idx) {
+      if (phase === 'pre') {
+        const hints = [
+          '💡 예시: "연필과 자가 있어요.<br/>글씨 쓰기와 줄 긋기로 나눠요"',
+          '💡 예시: "사자, 새, 물고기가 있어요.<br/>다리 개수로 나눠봐요"',
+          '💡 자유롭게 말해도 괜찮아요!'
+        ];
+        return hints[idx] || hints[2];
+      } else {
+        const hints = [
+          '💡 예시: "쓰임새로도, 색깔로도 나눌 수 있어요"',
+          '💡 예시: "다리 수로도, 사는 곳으로도 나눌 수 있어요"',
+          '💡 두 가지 기준으로 말해봐요!'
+        ];
+        return hints[idx] || hints[2];
+      }
+    }
+
+    function recordView(phase, idx) {
+      const questions = phase === 'pre' ? (STATE.data.preQuestions || []) : (STATE.data.postQuestions || []);
+      if (questions.length === 0 || idx >= questions.length) {
+        if (phase === 'pre') screenActivity1();
+        else screenSelfRating();
+        return;
+      }
+      const q = questions[idx];
+      window._currentQuestion = q;
+      window._currentRecordingBlob = null;  // 다시 듣기용
+      window._currentRecordingUrl = null;
+      const phaseLabel = phase === 'pre' ? '학습 전' : '학습 후';
+      const phaseColor = phase === 'pre' ? '#F97316' : '#8B5CF6';
+      const phaseEmoji = phase === 'pre' ? '🌱' : '🌟';
+      const hint = getRecordingHint(phase, idx);
+      
+      showScreen(`
+        <div style="flex:1; display:flex; align-items:stretch; justify-content:center; width:100%; min-height:0;">
+          <div class="record-card record-card-layout">
+            <div class="record-phase-badge" style="background:${phaseColor};">
+              ${phaseEmoji} ${phaseLabel} ${idx + 1}/${questions.length}
+            </div>
+            <div class="record-question">💭 ${q.질문}</div>
+            <div class="record-hint-box">
+              <p class="record-hint-text">${hint}</p>
+            </div>
+            
+            <!-- 녹음 버튼 + 상태 -->
+            <div class="record-input-area">
+              <button id="record-btn" class="record-button" onclick="toggleRecording('${phase}', ${idx})">
+                ${ICONS.mic}
+              </button>
+              <div class="record-status" id="record-status">🎤 누르고 말하기</div>
+            </div>
+            
+            <!-- 실시간 STT + 키보드 입력 -->
+            <textarea 
+              id="transcript-input" 
+              class="transcript-textarea"
+              placeholder="🎤 녹음하거나 ⌨️ 직접 써도 돼요"
+              rows="2"
+              oninput="onTranscriptInput()"
+            ></textarea>
+            
+            <!-- 녹음 후 다시 듣기 + 자기평가 (한 줄로) -->
+            <div id="post-record-area" style="display:none;">
+              <div class="post-compact-row">
+                <button class="btn-listen" onclick="playMyRecording()">🔊 들어보기</button>
+                <button class="btn-rerecord" onclick="reRecord('${phase}', ${idx})">🔄 다시</button>
+                <div class="mini-stars-inline" id="mini-stars">
+                  ${[1,2,3,4,5].map(n => `
+                    <button class="mini-star-btn" data-r="${n}" onclick="setMiniRating(${n}, '${phase}', ${idx})">${StarSvg()}</button>
+                  `).join('')}
+                </div>
+              </div>
+              <div class="mini-rating-text" id="mini-rating-text"></div>
+            </div>
+            
+            <!-- 액션 버튼 -->
+            <div class="record-actions">
+              <button class="btn-secondary" onclick="skipRecording('${phase}', ${idx})">⏭️ 건너뛰기</button>
+              <button id="save-btn" class="btn-main record-save-btn" style="display:none;" onclick="saveAndNext('${phase}', ${idx})">
+                💾 저장하고 다음 ${ICONS.arrow}
+              </button>
+            </div>
+          </div>
+        </div>
+        <div style="display:flex; justify-content:center; flex-shrink:0;">
+          <button class="speaker-toggle ${STATE.speakerOn ? 'on' : ''}" onclick="toggleSpeaker()">
+            ${STATE.speakerOn ? ICONS.speakerOn : ICONS.speakerOff}
+          </button>
+        </div>
+      `);
+      autoReadScreen(`${q.질문}`);
+    }
+    
+    // 텍스트 입력 시 저장 버튼 활성화
+    window.onTranscriptInput = function() {
+      const text = document.getElementById('transcript-input').value.trim();
+      const saveBtn = document.getElementById('save-btn');
+      if (saveBtn) {
+        saveBtn.style.display = text.length > 0 ? '' : 'none';
+      }
+    };
+    
+    // 자기평가 별 (녹음 후, 한 화면에서 작은 별)
+    window._miniRating = 0;
+    window.setMiniRating = function(n, phase, idx) {
+      playSfx('click');
+      window._miniRating = n;
+      document.querySelectorAll('.mini-star-btn').forEach(btn => {
+        const v = parseInt(btn.dataset.r);
+        btn.classList.toggle('filled', v <= n);
+      });
+      const texts = ['', '많이 어려웠어요', '조금 어려웠어요', '괜찮았어요', '잘 말했어요', '아주 잘 말했어요'];
+      const emojis = ['', '😢', '😕', '🙂', '😊', '🤩'];
+      document.getElementById('mini-rating-text').innerHTML = `${emojis[n]} ${texts[n]}`;
+      // 별 3개 이하면 다시 녹음 권유
+      if (n <= 3) {
+        setTimeout(() => {
+          const status = document.getElementById('record-status');
+          if (status) status.innerHTML = '💡 다시 녹음해볼까요? 위에 🔄 버튼!';
+          speak('다시 녹음해볼까요?');
+        }, 600);
+      }
+    };
+    
+    // 다시 녹음
+    window.reRecord = function(phase, idx) {
+      playSfx('click');
+      window._miniRating = 0;
+      window._currentRecordingBlob = null;
+      STATE.reRecordCount = (STATE.reRecordCount || 0) + 1;
+      // 화면 다시 그리기
+      recordView(phase, idx);
+    };
+    
+    // 내 녹음 다시 듣기
+    window.playMyRecording = function() {
+      if (!window._currentRecordingUrl) {
+        const text = document.getElementById('transcript-input')?.value || '';
+        if (text.trim()) speak(text); // 음성 없으면 TTS로 읽어줌
+        return;
+      }
+      const audio = new Audio(window._currentRecordingUrl);
+      audio.play();
+      playSfx('click');
+    };
+
+    async function toggleRecording(phase, idx) {
+      const btn = document.getElementById('record-btn');
+      const status = document.getElementById('record-status');
+      const textarea = document.getElementById('transcript-input');
+      const saveBtn = document.getElementById('save-btn');
+      const postArea = document.getElementById('post-record-area');
+      
+      if (mediaRecorder && mediaRecorder.state === 'recording') {
+        // 녹음 정지
+        mediaRecorder.stop();
+        if (speechRecognition) { try { speechRecognition.stop(); } catch(e) {} }
+        btn.classList.remove('recording');
+        btn.innerHTML = ICONS.mic;
+        status.textContent = '✅ 녹음 끝! 들어보고 별점도 줘봐요';
+        playSfx('success');
+        speak('녹음이 끝났어요. 들어보고 별점을 매겨봐요.');
+        // 최종 텍스트 정제 (textarea에 이미 들어가 있음)
+        currentTranscript = cleanTranscript(currentTranscript);
+        if (textarea && currentTranscript.trim()) {
+          textarea.value = currentTranscript.trim();
+        }
+        // 녹음 blob URL 만들기 (다시 듣기용)
+        setTimeout(() => {
+          if (recordedChunks.length > 0) {
+            const blob = new Blob(recordedChunks, { type: mediaRecorder.mimeType });
+            window._currentRecordingBlob = blob;
+            window._currentRecordingUrl = URL.createObjectURL(blob);
+          }
+          if (postArea) postArea.style.display = 'block';
+          // 텍스트가 있으면 저장 버튼 표시
+          const text = (textarea?.value || '').trim();
+          if (saveBtn && text.length > 0) saveBtn.style.display = '';
+        }, 300);
+        return;
+      }
+      
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        recordedChunks = [];
+        currentTranscript = '';
+        const mimeType = MediaRecorder.isTypeSupported('audio/webm') ? 'audio/webm' : 'audio/mp4';
+        mediaRecorder = new MediaRecorder(stream, { mimeType });
+        mediaRecorder.ondataavailable = (e) => {
+          if (e.data.size > 0) recordedChunks.push(e.data);
+        };
+        mediaRecorder.onstop = () => stream.getTracks().forEach(t => t.stop());
+        
+        playSfx('correct');
+        speak('녹음을 시작해요. 자유롭게 말해보세요.');
+        
+        status.textContent = '📢 곧 시작해요...';
+        await new Promise(r => setTimeout(r, STATE.speakerOn ? 1500 : 300));
+        
+        mediaRecorder.start();
+        
+        btn.classList.add('recording');
+        btn.innerHTML = ICONS.stop;
+        status.innerHTML = '🔴 녹음 중! 끝나면 다시 빨간 버튼';
+        if (textarea) {
+          textarea.value = '';
+          textarea.placeholder = '🎧 듣고 있어요... 천천히 말해주세요';
+        }
+        if (postArea) postArea.style.display = 'none';
+        if (saveBtn) saveBtn.style.display = 'none';
+        
+        const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (SpeechRec) {
+          speechRecognition = new SpeechRec();
+          speechRecognition.lang = 'ko-KR';
+          speechRecognition.continuous = true;
+          speechRecognition.interimResults = true;
+          speechRecognition.onresult = (event) => {
+            let interim = '', final = '';
+            for (let i = event.resultIndex; i < event.results.length; i++) {
+              const txt = event.results[i][0].transcript;
+              if (event.results[i].isFinal) final += txt;
+              else interim += txt;
+            }
+            if (final) currentTranscript += cleanTranscript(final) + ' ';
+            const cleanInterim = cleanTranscript(interim);
+            // textarea에 실시간 표시 (음성 + 키보드 입력 통합)
+            if (textarea) {
+              textarea.value = (currentTranscript + cleanInterim).trim();
+            }
+          };
+          speechRecognition.onerror = (e) => console.log('STT:', e.error);
+          try { speechRecognition.start(); } catch(e) {}
+        }
+      } catch (err) {
+        status.textContent = '⚠️ 마이크 사용 불가. 키보드로 직접 써도 돼요!';
+        if (textarea) {
+          textarea.placeholder = '⌨️ 여기에 직접 써주세요';
+          textarea.focus();
+        }
+      }
+    }
+
+    function skipRecording(phase, idx) {
+      playSfx('click');
+      recordView(phase, idx + 1);
+    }
+
+    async function saveAndNext(phase, idx) {
+      playSfx('click');
+      const q = window._currentQuestion;
+      if (!q) {
+        skipRecording(phase, idx);
+        return;
+      }
+      
+      const saveBtn = document.getElementById('save-btn');
+      const textarea = document.getElementById('transcript-input');
+      saveBtn.textContent = '저장 중...';
+      saveBtn.disabled = true;
+      
+      // textarea에서 최종 텍스트 (음성 + 키보드 입력 통합)
+      const finalTranscript = (textarea?.value || '').trim() || cleanTranscript(currentTranscript);
+      const blob = window._currentRecordingBlob;
+      
+      const sendData = async (base64, mimeType) => {
+        try {
+          await gasPost({
+            action: 'saveRecording',
+            studentId: STATE.studentId,
+            studentName: STATE.studentName,
+            phase: phase,
+            questionId: q.ID,
+            question: q.질문,
+            transcript: finalTranscript,
+            selfRating: window._miniRating || 0,
+            audioBase64: base64 || '',
+            mimeType: mimeType || ''
+          });
+          if (phase === 'pre') STATE.preRecordings.push({ qId: q.ID, transcript: finalTranscript });
+          else STATE.postRecordings.push({ qId: q.ID, transcript: finalTranscript });
+        } catch (err) { console.error('저장 실패:', err); }
+        playSfx('success');
+        // 별점 초기화
+        window._miniRating = 0;
+        window._currentRecordingBlob = null;
+        window._currentRecordingUrl = null;
+        recordView(phase, idx + 1);
+      };
+      
+      if (blob) {
+        // 음성 녹음 카운트
+        STATE.voiceCount = (STATE.voiceCount || 0) + 1;
+        const reader = new FileReader();
+        reader.onloadend = async () => {
+          const base64 = reader.result.split(',')[1];
+          await sendData(base64, blob.type);
+        };
+        reader.readAsDataURL(blob);
+      } else {
+        // 키보드만 입력한 경우 - 텍스트만 저장
+        STATE.keyboardCount = (STATE.keyboardCount || 0) + 1;
+        await sendData('', '');
+      }
+    }
+
+    // ================================================
+    //  활동 1, 2 (고정 기준 분류)
+    // ================================================
+    function screenActivity1() {
+      fixedSortActivity({
+        number: 1,
+        title: '📦 학용품 분류',
+        criterionLabel: '쓰임새',
+        inquiryQuestion: '🤔 이 학용품은 어떤 종류일까요?',
+        tutorial: '학용품을 <strong>콕!</strong> 누른 다음, 같은 종류 칸을 <strong>콕!</strong> 눌러요',
+        items: STATE.data.activity1 || [],
+        onComplete: () => screenActivity2()
+      });
+    }
+
+    function screenActivity2() {
+      fixedSortActivity({
+        number: 2,
+        title: '🦓 동물 분류',
+        criterionLabel: '다리의 수',
+        inquiryQuestion: '🤔 다리가 몇 개일까요?',
+        tutorial: '동물을 <strong>콕!</strong> 누르고, 같은 다리 수 칸을 <strong>콕!</strong> 눌러요',
+        items: STATE.data.activity2 || [],
+        onComplete: () => screenActivity3()
+      });
+    }
+
+    function fixedSortActivity({ number, title, criterionLabel, inquiryQuestion, tutorial, items, onComplete }) {
+      const seen = new Set();
+      const bins = [];
+      items.forEach(it => {
+        const id = String(it.분류기준ID);
+        if (!seen.has(id)) {
+          seen.add(id);
+          bins.push({ id: id, label: it.분류기준라벨 });
+        }
+      });
+      bins.sort((a, b) => {
+        const an = parseInt(a.id), bn = parseInt(b.id);
+        if (!isNaN(an) && !isNaN(bn)) return an - bn;
+        return a.label.localeCompare(b.label);
+      });
+      const binColors = ['amber', 'rose', 'sky', 'emerald', 'violet', 'orange'];
+      bins.forEach((b, i) => b.color = binColors[i % binColors.length]);
+      
+      let activeItems = shuffle(items.map(it => ({
+        id: it.ID, icon: it.아이콘, name: it.이름, type: String(it.분류기준ID)
+      })));
+      let correctCount = 0;
+      const totalCount = activeItems.length;
+      
+      // 탐구 질문 전역 저장 (handleItemClick에서 사용)
+      window.CURRENT_INQUIRY_QUESTION = inquiryQuestion;
+      
+      function render() {
+        showScreen(`
+          ${renderHeader({ number, title, criterionLabel, fixed: true })}
+          ${renderTutorial(tutorial)}
+          ${renderFeedback(
+            inquiryQuestion || '👆 친구를 골라보세요',
+            'thinking',
+            '👆 분류할 친구를 콕! 눌러주세요'
+          )}
+          <div class="sort-main">
+            <div class="item-tray" id="item-tray">
+              <span class="tray-label">📦 분류할 친구들 (${activeItems.length}개)</span>
+              <div class="tray-items" id="tray-items"></div>
+            </div>
+            <div class="bins-column" style="--bin-count:${bins.length}">
+              ${bins.map(b => `
+                <div class="drop-bin bin-${b.color}" id="${b.id}">
+                  <div class="bin-label-row">
+                    <span class="bin-label">${b.label}</span>
+                    <span class="bin-count" id="count-${b.id}">(0개)</span>
+                  </div>
+                  <div class="bin-items" id="items-${b.id}"></div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `);
+        renderItems();
+        // 활동 시작 시 탐구 질문을 음성으로 안내
+        const cleanInquiry = (inquiryQuestion || '').replace(/[🤔❓!?]/g, '').trim();
+        autoReadScreen(cleanInquiry || '친구를 골라서 알맞은 칸에 넣어주세요');
+      }
+      
+      function renderItems() {
+        const tray = document.getElementById('tray-items');
+        if (!tray) return;
+        tray.innerHTML = '';
+        activeItems.forEach(item => {
+          const el = document.createElement('div');
+          el.className = 'draggable-item';
+          el.innerHTML = `<span class="item-icon">${item.icon}</span><span class="item-name">${item.name}</span>`;
+          tray.appendChild(el);
+          makeDraggable(el, (binId) => handleDrop(item, binId, el));
+        });
+        const trayLabel = document.querySelector('.tray-label');
+        if (trayLabel) trayLabel.textContent = `📦 분류할 친구들 (${activeItems.length}개)`;
+      }
+      
+      function handleDrop(item, binId, itemEl) {
+        // 정확한 문자열 비교 (앞뒤 공백 제거)
+        const itemType = String(item.type || '').trim();
+        const targetBinId = String(binId || '').trim();
+        const isCorrect = itemType !== '' && targetBinId !== '' && itemType === targetBinId;
+        
+        if (isCorrect) {
+          activeItems = activeItems.filter(i => i.id !== item.id);
+          correctCount++;
+          const itemsContainer = document.getElementById('items-' + binId);
+          const placed = document.createElement('div');
+          placed.className = 'bin-item';
+          placed.innerHTML = `<span class="bin-item-icon">${item.icon}</span><span class="bin-item-name">${item.name}</span>`;
+          itemsContainer.appendChild(placed);
+          const countEl = document.getElementById('count-' + binId);
+          if (countEl) countEl.textContent = `(${itemsContainer.children.length}개)`;
+          itemEl.remove();
+          renderItems();
+          const happyMsgs = [
+            `🎉 와! ${item.name} 정답이에요!`,
+            `👍 ${item.name} 딩동댕!`,
+            `🌟 ${item.name} 정확해요!`,
+            `💖 ${item.name} 맞았어요!`
+          ];
+          updateFeedback(happyMsgs[Math.floor(Math.random() * happyMsgs.length)], 'happy');
+          playSfx('correct');
+          speak(`${item.name} 정답이에요!`);
+          
+          if (activeItems.length === 0) {
+            setTimeout(() => {
+              updateFeedback('🎊 모두 잘 분류했어요! 대단해요! 🎉', 'happy');
+              playSfx('success');
+              speak('와! 모두 잘 분류했어요!');
+              fireConfetti();
+              STATE.scores[`a${number}`] = Math.round(correctCount / totalCount * 100);
+              _catSave();
+              window._activityNext = onComplete;
+              const tray = document.getElementById('tray-items');
+              tray.innerHTML = `
+                <button class="btn-main" style="max-width:340px;" onclick="window._activityNext()">
+                  ✨ 다음 활동으로 가요! ${ICONS.arrow}
+                </button>
+              `;
+            }, 600);
+          } else {
+            setTimeout(() => {
+              if (activeItems.length > 0) {
+                updateFeedback(
+                  inquiryQuestion || '👆 다음 친구를 골라봐요',
+                  'thinking',
+                  '👆 다음 친구를 콕! 눌러주세요'
+                );
+              }
+            }, 1500);
+          }
+        } else {
+          // 오답 - 분류함에는 추가하지 않고 메시지만 표시
+          const sadMsgs = [
+            `🤔 ${item.name}은(는) 다른 곳이 어울려요`,
+            `😅 ${item.name}은(는) 다시 한번 봐요`,
+            `🧐 ${item.name}, 다른 칸도 살펴볼까요?`
+          ];
+          updateFeedback(
+            sadMsgs[Math.floor(Math.random() * sadMsgs.length)],
+            'sad',
+            inquiryQuestion ? `${inquiryQuestion.replace(/🤔/, '💭')} 잘 생각해봐요` : ''
+          );
+          playSfx('wrong');
+          speak(`${item.name}은 다른 곳이 더 어울려요`);
+        }
+      }
+      render();
+    }
+
+    // ================================================
+    //  활동 3
+    // ================================================
+    function screenActivity3() {
+      // 보기를 5개로 제한 (정답은 모두 포함, 오답은 일부만)
+      const allOpts = STATE.data.activity3 || [];
+      const correctOpts = allOpts.filter(o => o.정답여부 === true);
+      const wrongOpts = allOpts.filter(o => o.정답여부 !== true);
+      // 정답 모두 + 오답 일부 = 최대 5개
+      const maxOpts = 5;
+      const wrongCount = Math.max(0, maxOpts - correctOpts.length);
+      const selectedWrong = shuffle(wrongOpts).slice(0, wrongCount);
+      const opts = shuffle([...correctOpts, ...selectedWrong]);
+      
+      const correctIds = correctOpts.map(o => o.ID);
+      let selected = [];
+      const blocksPreview = (STATE.data.activity4Blocks || [])
+        .map(b => BlockSvg(b, 36)).join('');
+      
+      function render() {
+        showScreen(`
+          ${renderHeader({ number: 3, title: '🎯 분류 기준을 찾아봐요', criterionLabel: null, fixed: false })}
+          ${renderTutorial('이 블록들을 어떻게 나눌까요? <strong>누가 봐도 똑같이</strong> 나눌 수 있는 기준을 <strong>모두</strong> 찾아주세요!')}
+          <div style="background:white; border:4px solid var(--c-primary-light); border-radius:22px; padding:14px; flex-shrink:0; box-shadow:0 4px 12px rgba(0,0,0,0.06);">
+            <div style="text-align:center; font-family:var(--font-display); font-size: clamp(28px, 3.4vh, 34px); color:var(--c-text); margin-bottom:8px;">이 블록들을 잘 살펴보세요</div>
+            <div style="display:flex; justify-content:center; gap:10px; flex-wrap:wrap;">${blocksPreview}</div>
+          </div>
+          ${renderFeedback('어떤 기준이 좋을까요?', 'thinking', '차근차근 골라보세요')}
+          <div class="choice-grid">
+            ${opts.map(o => `
+              <button class="choice-card" id="opt-${o.ID}" onclick="handleChoice('${o.ID}')">
+                <span class="choice-icon">${o.아이콘}</span>
+                <span class="choice-text">${o.보기}</span>
+              </button>
+            `).join('')}
+          </div>
+          <div id="next-area" style="display:none; flex-shrink:0;">
+            <div style="background:#ECFDF5; border:4px solid #6EE7B7; border-radius:20px; padding:14px; margin-bottom:12px; text-align:center;">
+              <div style="font-family:var(--font-display); font-size: clamp(26px, 3.2vh, 32px); color:#065F46; line-height:1.4;">
+                정답을 모두 찾았어요!<br/>
+                <span style="font-size:0.85em;">분류 기준은 <span class="hi-green"><strong>누가 봐도 결과가 같아야</strong></span> 해요</span>
+              </div>
+            </div>
+            <button class="btn-main" onclick="screenActivity4()">다음 활동으로 ${ICONS.arrow}</button>
+          </div>
+        `);
+        autoReadScreen('이 블록들을 어떻게 나눌까요? 누가 봐도 똑같이 나눌 수 있는 기준을 모두 찾아주세요.');
+      }
+      
+      window.handleChoice = (optId) => {
+        const opt = opts.find(o => String(o.ID) === String(optId));
+        if (!opt || selected.includes(optId)) return;
+        if (opt.정답여부 === true) {
+          selected.push(optId);
+          const card = document.getElementById('opt-' + optId);
+          if (card) card.classList.add('selected');
+          updateFeedback(opt.피드백, 'happy');
+          playSfx('correct');
+          speak(opt.피드백);
+          if (correctIds.every(id => selected.includes(id))) {
+            STATE.scores.a3 = 100;
+            _catSave();
+            playSfx('success');
+            fireConfetti();
+            document.getElementById('next-area').style.display = 'block';
+          }
+        } else {
+          updateFeedback(opt.피드백, 'sad');
+          playSfx('wrong');
+          speak(opt.피드백);
+        }
+      };
+      render();
+    }
+
+    // ================================================
+    //  활동 4
+    // ================================================
+    const PRESET_CRITERIA = {
+      color: { label: '색깔', icon: '🎨', binLabels: { red: '빨강', blue: '파랑', yellow: '노랑', green: '초록' } },
+      shape: { label: '모양', icon: '🔷', binLabels: { circle: '동그라미', square: '네모', triangle: '세모' } }
+    };
+    let a4State = null;
+
+    function screenActivity4() {
+      a4State = {
+        setupDone: false,
+        presetKey: null,
+        autoBins: true,
+        criterion: '',
+        bins: [
+          { id: 'b1', label: '', items: [] },
+          { id: 'b2', label: '', items: [] },
+          { id: 'b3', label: '', items: [] },
+          { id: 'b4', label: '', items: [] }
+        ],
+        completedRounds: 0
+      };
+      renderA4Setup();
+    }
+
+    function renderA4Setup() {
+      const blocks = STATE.data.activity4Blocks || [];
+      const blocksPreview = blocks.map(b => BlockSvg(b, 36)).join('');
+      
+      showScreen(`
+        ${renderHeader({ number: 4, title: '🧱 내가 분류 기준을 정해요!', criterionLabel: null, fixed: false })}
+        ${renderTutorial(`<span class="hi-pink text-purple"><strong>내가 분류 기준을 정해요!</strong></span> ① 기준 → ② 칸 이름 → ③ 시작 🚀${a4State.completedRounds > 0 ? ' 💜 <span class="hi-blue"><strong>기준이 다르면 결과도 다른지</strong></span> 살펴봐요!' : ''}`)}
+        <div style="flex:1; display:flex; flex-direction:column; gap:clamp(6px, 1vh, 10px); min-height:0; overflow:hidden;">
+          <div style="background:white; border:3px solid var(--c-primary-light); border-radius:18px; padding:clamp(8px, 1.2vh, 12px); flex-shrink:0;">
+            <div style="text-align:center; font-family:var(--font-display); font-size: clamp(31px, 3.4vh, 37px); color:var(--c-text); margin-bottom:6px;">🧱 분류할 블록 (${blocks.length}개) 👀</div>
+            <div style="display:flex; justify-content:center; gap:6px; flex-wrap:wrap;">${blocksPreview}</div>
+          </div>
+          
+          <div class="setup-section" style="background:linear-gradient(180deg, #FFF5F5, white); border-color:#FBCFE8; padding:clamp(10px, 1.5vh, 16px);">
+            <div class="setup-step-header" style="margin-bottom:clamp(6px, 1vh, 10px);">
+              <span class="setup-step-num" style="background:linear-gradient(135deg, #EC4899, #BE185D);">1</span>
+              <span class="setup-step-title">🎨 분류 기준</span>
+            </div>
+            <div style="display:flex; align-items:center; gap:10px; background:white; border:3px solid #FBCFE8; border-radius:14px; padding:clamp(8px, 1.2vh, 12px) clamp(10px, 1.4vw, 14px); margin-bottom:clamp(6px, 1vh, 10px);">
+              ${ICONS.edit}
+              <input type="text" class="text-input" id="criterion-input" placeholder="✏️ 직접 써봐요! 예: 색깔" 
+                value="${a4State.criterion}" 
+                oninput="a4State.criterion = this.value; a4State.presetKey = null; document.querySelectorAll('.preset-chip').forEach(c => c.classList.remove('active'));"
+                style="border:none; background:transparent; padding:0;">
+            </div>
+            <div class="preset-chips">
+              ${ICONS.wand}
+              <span style="font-family:var(--font-display); font-size: clamp(26px, 3.0vh, 31px); color:#9F1239;">추천 👇</span>
+              ${Object.entries(PRESET_CRITERIA).map(([key, cfg]) => `
+                <button class="preset-chip ${a4State.presetKey === key ? 'active' : ''}" 
+                  data-key="${key}" onclick="applyPreset('${key}')">
+                  ${cfg.icon} ${cfg.label}
+                </button>
+              `).join('')}
+            </div>
+          </div>
+          
+          <div class="setup-section" style="background:linear-gradient(180deg, #F0F9FF, white); border-color:#BAE6FD; padding:clamp(10px, 1.5vh, 16px);">
+            <div class="setup-step-header" style="margin-bottom:clamp(6px, 1vh, 10px);">
+              <span class="setup-step-num" style="background:linear-gradient(135deg, #3B82F6, #1D4ED8);">2</span>
+              <span class="setup-step-title">📦 분류함 이름 (2개 이상)</span>
+              <div style="margin-left:auto; display:flex; gap:6px; align-items:center;">
+                <span style="font-family:var(--font-body); font-size: clamp(25px, 2.8vh, 30px); color:#0C4A6E;">자동:</span>
+                <button class="auto-toggle ${a4State.autoBins ? 'on' : 'off'}" onclick="toggleAutoBins()">
+                  ${a4State.autoBins ? '✅ ON' : 'OFF'}
+                </button>
+              </div>
+            </div>
+            <div class="bin-inputs" id="bin-inputs">
+              ${a4State.bins.map((b, i) => `
+                <div class="bin-input-wrap">
+                  <span style="color:#3B82F6; font-family:var(--font-display); font-size: clamp(30px, 3.3vh, 32px); flex-shrink:0;">${i + 1}.</span>
+                  <input type="text" placeholder="✏️ 적기" value="${b.label}" 
+                    oninput="a4State.bins[${i}].label = this.value; if(a4State.autoBins){a4State.autoBins=false; const t=document.querySelector('.auto-toggle'); if(t){t.textContent='OFF'; t.classList.remove('on'); t.classList.add('off');}}">
+                </div>
+              `).join('')}
+            </div>
+          </div>
+          
+          <button class="btn-main" onclick="startSorting()" style="flex-shrink:0;">🚀 분류 시작! ${ICONS.arrow}</button>
+        </div>
+      `);
+      if (a4State.completedRounds === 0) {
+        autoReadScreen('내가 분류 기준을 정해요. 어떤 점이 비슷한 블록끼리 모을지 정해보세요.');
+      } else {
+        autoReadScreen('다른 기준으로 다시 해볼까요? 기준이 다르면 결과도 달라져요.');
+      }
+    }
+
+    function applyPreset(key) {
+      playSfx('click');
+      a4State.presetKey = key;
+      a4State.criterion = PRESET_CRITERIA[key].label;
+      
+      if (a4State.autoBins) {
+        const labels = Object.values(PRESET_CRITERIA[key].binLabels);
+        a4State.bins = labels.map((l, i) => ({ id: 'b' + (i + 1), label: l, items: [] }));
+        while (a4State.bins.length < 4) {
+          a4State.bins.push({ id: 'b' + (a4State.bins.length + 1), label: '', items: [] });
+        }
+      }
+      renderA4Setup();
+    }
+
+    function toggleAutoBins() {
+      playSfx('click');
+      a4State.autoBins = !a4State.autoBins;
+      if (a4State.autoBins && a4State.presetKey) {
+        const labels = Object.values(PRESET_CRITERIA[a4State.presetKey].binLabels);
+        a4State.bins = labels.map((l, i) => ({ id: 'b' + (i + 1), label: l, items: [] }));
+        while (a4State.bins.length < 4) {
+          a4State.bins.push({ id: 'b' + (a4State.bins.length + 1), label: '', items: [] });
+        }
+      }
+      renderA4Setup();
+    }
+
+    function startSorting() {
+      if (!a4State.criterion.trim()) {
+        showModal(`
+          <div style="font-size:90px; line-height:1;">✏️🤔</div>
+          <h2 class="modal-title">분류 기준을 적어주세요!</h2>
+          <p class="modal-body">
+            먼저 <strong>STEP 1</strong>에서<br/>
+            <span class="hi-pink">"색깔" 같은 분류 기준</span>을 적거나,<br/>
+            아래 <strong>추천 버튼</strong>을 눌러주세요! 💖
+          </p>
+          <button class="btn-secondary" onclick="closeModal()">😊 알겠어요!</button>
+        `);
+        return;
+      }
+      const filled = a4State.bins.filter(b => b.label.trim());
+      if (filled.length < 2) {
+        showModal(`
+          <div style="font-size:90px; line-height:1;">📝🤗</div>
+          <h2 class="modal-title">분류함이 더 필요해요!</h2>
+          <p class="modal-body">
+            분류함 이름을 <span class="hi-blue"><strong>2개 이상</strong></span> 적어주세요!<br/>
+            <small>(예: 빨강 / 파랑 / 노랑)</small>
+          </p>
+          <button class="btn-secondary" onclick="closeModal()">😊 알겠어요!</button>
+        `);
+        return;
+      }
+      playSfx('click');
+      a4State.bins = filled;
+      a4State.setupDone = true;
+      renderA4Sort();
+    }
+
+    function renderA4Sort() {
+      const blocks = shuffle((STATE.data.activity4Blocks || []).map(b => ({
+        id: b.ID, color: b.색깔, shape: b.모양, size: b.크기
+      })));
+      a4State.activeBlocks = blocks;
+      a4State.bins.forEach(b => b.items = []);
+      const defaultColors = ['rose', 'emerald', 'amber', 'sky', 'violet', 'orange'];
+      
+      // 분류함 색깔: 라벨(빨강/파랑/노랑/초록 등)에 맞게 자동 매칭
+      // 매칭 안 되면 defaultColors 순서대로
+      function pickBinColor(label, fallbackIdx) {
+        const t = String(label || '').trim();
+        // 한국어 색깔 → CSS 클래스 매핑
+        if (/빨강|빨간|red/i.test(t)) return 'rose';
+        if (/파랑|파란|blue/i.test(t)) return 'sky';
+        if (/노랑|노란|yellow/i.test(t)) return 'amber';
+        if (/초록|녹색|green/i.test(t)) return 'emerald';
+        if (/보라|보랏|purple|violet/i.test(t)) return 'violet';
+        if (/주황|오렌지|orange/i.test(t)) return 'orange';
+        // 모양 기준 매칭 (모양은 색상 매칭 안 하지만, 일관성)
+        return defaultColors[fallbackIdx % defaultColors.length];
+      }
+      
+      // 탐구 질문 - 사용자가 정한 기준 사용
+      const inquiryQuestion = `🤔 ${a4State.criterion}이(가) 어떤가요?`;
+      window.CURRENT_INQUIRY_QUESTION = inquiryQuestion;
+      
+      showScreen(`
+        ${renderHeader({ number: 4, title: '🧱 내가 분류 기준을 정해요!', criterionLabel: a4State.criterion, fixed: false })}
+        ${renderTutorial(`<span class="hi-yellow"><strong>"${a4State.criterion}"</strong></span> 기준으로 분류해 봐요! 🎯`)}
+        ${renderFeedback(
+          inquiryQuestion,
+          'thinking',
+          '👆 블록을 콕! 눌러서 골라주세요'
+        )}
+        <div class="sort-main">
+          <div class="item-tray">
+            <span class="tray-label">🧱 블록 (${blocks.length}개)</span>
+            <div class="tray-items" id="block-tray"></div>
+          </div>
+          <div class="bins-column" style="--bin-count:${a4State.bins.length}">
+            ${a4State.bins.map((b, i) => `
+              <div class="drop-bin bin-${pickBinColor(b.label, i)}" id="${b.id}">
+                <div class="bin-label-row">
+                  <span class="bin-label">${b.label}</span>
+                  <span class="bin-count" id="count-${b.id}">(0개)</span>
+                </div>
+                <div class="bin-items" id="items-${b.id}"></div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `);
+      renderA4Blocks();
+      autoReadScreen(`${a4State.criterion} 기준으로 분류해봐요`);
+    }
+
+    function renderA4Blocks() {
+      const tray = document.getElementById('block-tray');
+      if (!tray) return;
+      tray.innerHTML = '';
+      a4State.activeBlocks.forEach(block => {
+        const el = document.createElement('div');
+        el.className = 'draggable-item';
+        el.style.padding = '10px';
+        el.innerHTML = BlockSvg({ 색깔: block.color, 모양: block.shape, 크기: block.size }, 60);
+        tray.appendChild(el);
+        makeDraggable(el, (binId) => handleA4Drop(block, binId, el));
+      });
+    }
+
+    function handleA4Drop(block, binId, itemEl) {
+      const bin = a4State.bins.find(b => b.id === binId);
+      if (!bin) return;
+      
+      // 추천 기준 사용 시 정답 검증
+      if (a4State.presetKey) {
+        const expectedValue = block[a4State.presetKey]; // color/shape
+        const expectedLabel = PRESET_CRITERIA[a4State.presetKey].binLabels[expectedValue];
+        if (bin.label !== expectedLabel) {
+          // 틀림!
+          const sadMsgs = [
+            `🤔 다른 칸이 더 어울려요! 잘 봐봐요 🔍`,
+            `😅 음~ 다시 한번 보고 옮겨봐요! 💪`,
+            `🧐 다른 곳도 살펴볼까요? 🔎`
+          ];
+          updateFeedback(sadMsgs[Math.floor(Math.random() * sadMsgs.length)], 'sad');
+          playSfx('wrong');
+          speak('다른 칸이 더 어울려요');
+          return;
+        }
+      }
+      
+      // 정답이거나 자유 분류
+      a4State.activeBlocks = a4State.activeBlocks.filter(b => b.id !== block.id);
+      bin.items.push(block);
+      const itemsContainer = document.getElementById('items-' + binId);
+      const placed = document.createElement('div');
+      placed.className = 'bin-item';
+      placed.innerHTML = BlockSvg({ 색깔: block.color, 모양: block.shape, 크기: block.size }, 32);
+      itemsContainer.appendChild(placed);
+      const countEl = document.getElementById('count-' + binId);
+      if (countEl) countEl.textContent = `(${itemsContainer.children.length}개)`;
+      itemEl.remove();
+      renderA4Blocks();
+      const happyMsgs = ['👍 좋아요!', '🌟 잘했어요!', '✨ 멋져요!', '💕 굿!'];
+      updateFeedback(happyMsgs[Math.floor(Math.random() * happyMsgs.length)], 'happy');
+      playSfx('correct');
+      
+      if (a4State.activeBlocks.length === 0) {
+        a4State.completedRounds++;
+        STATE.scores.a4 = a4State.completedRounds;
+        _catSave();
+        setTimeout(() => {
+          const msg = a4State.completedRounds === 1
+            ? `🎉 분류 완료! 다른 기준으로도 해볼까요?`
+            : `🎊 또 다른 기준으로도 분류했어요!`;
+          updateFeedback(msg, 'happy');
+          playSfx('success');
+          speak('분류 완료');
+          fireConfetti();
+          const tray = document.getElementById('block-tray');
+          tray.innerHTML = `
+            <div style="display:flex; flex-direction:column; gap:14px; align-items:center; padding:12px;">
+              <button class="btn-secondary" onclick="screenActivity4()">${ICONS.retry} 다른 기준으로 다시</button>
+              ${a4State.completedRounds >= 1 ? `
+                <button class="btn-main" style="max-width:340px;" onclick="onActivity4Complete()">
+                  🎈 마무리하기 ${ICONS.arrow}
+                </button>
+              ` : ''}
+            </div>
+          `;
+        }, 600);
+      }
+    }
+
+    function onActivity4Complete() {
+      playSfx('click');
+      screenPostRecord(0);
+    }
+
+    // ================================================
+    //  자기평가
+    // ================================================
+    function screenSelfRating() {
+      let rating = 0;
+      function render() {
+        showScreen(`
+          ${renderTutorial('<strong>오늘 활동이 어땠나요?</strong> 별을 콕! 눌러주세요')}
+          <div style="flex:1; display:flex; align-items:center; justify-content:center; width:100%;">
+            <div class="record-card" style="text-align:center;">
+              <div style="display:flex; justify-content:center; margin-bottom:clamp(8px, 1.2vh, 14px);">
+                <div style="width:clamp(80px, 11vh, 100px); height:clamp(80px, 11vh, 100px);">${StarSvg().replace('class="star-svg"', 'class="star-svg" style="filter: drop-shadow(0 4px 8px rgba(251,191,36,0.4));"')}</div>
+              </div>
+              <h1 class="self-rating-question">
+                오늘 분류 활동은<br/>얼마나 재미있었나요?
+              </h1>
+              <p class="self-rating-sub">
+                재미있었던 만큼 별을 눌러주세요
+              </p>
+              <div class="stars-container" id="stars">
+                ${[1,2,3,4,5].map(n => `
+                  <button class="star-btn ${n <= rating ? 'filled' : ''}" data-rating="${n}" onclick="setRating(${n})">${StarSvg()}</button>
+                `).join('')}
+              </div>
+              <div id="rating-text" class="rating-text-display">
+                👆 별을 눌러주세요
+              </div>
+              <button class="btn-main" id="rating-submit" disabled onclick="submitRating()">
+                다음으로 ${ICONS.arrow}
+              </button>
+            </div>
+          </div>
+          <div style="display:flex; justify-content:center; flex-shrink:0;">
+            <button class="speaker-toggle ${STATE.speakerOn ? 'on' : ''}" onclick="toggleSpeaker()">
+              ${STATE.speakerOn ? ICONS.speakerOn : ICONS.speakerOff}
+            </button>
+          </div>
+        `);
+        autoReadScreen('오늘 분류 활동은 얼마나 재미있었나요? 재미있었던 만큼 별을 눌러주세요.');
+      }
+      // 모든 별 강조 효과를 1.1배 transform으로 처리하므로 fill만 바꾸면 됨
+      window.setRating = (n) => {
+        playSfx('click');
+        rating = n;
+        STATE.selfRating = n;
+        document.querySelectorAll('.star-btn').forEach(btn => {
+          const v = parseInt(btn.dataset.rating);
+          btn.classList.toggle('filled', v <= n);
+        });
+        const texts = ['',
+          '많이 어려웠어요',
+          '조금 어려웠어요',
+          '괜찮았어요',
+          '재미있었어요',
+          '아주 재미있었어요'
+        ];
+        const emojis = ['', '😢', '😕', '🙂', '😊', '🤩'];
+        document.getElementById('rating-text').innerHTML = `${emojis[n]} ${texts[n]}`;
+        document.getElementById('rating-submit').disabled = false;
+      };
+      window.submitRating = async () => {
+        playSfx('click');
+        const totalSec = Math.round((Date.now() - STATE.startTime) / 1000);
+        try {
+          await gasPost({
+            action: 'saveResult',
+            studentId: STATE.studentId,
+            studentName: STATE.studentName,
+            activity1Score: STATE.scores.a1,
+            activity2Score: STATE.scores.a2,
+            activity3Score: STATE.scores.a3,
+            activity4Count: STATE.scores.a4,
+            selfRating: STATE.selfRating,
+            retryCount: STATE.retryCount,
+            voiceCount: STATE.voiceCount || 0,
+            keyboardCount: STATE.keyboardCount || 0,
+            reRecordCount: STATE.reRecordCount || 0,
+            totalSeconds: totalSec
+          });
+        } catch (err) { console.error(err); }
+        if (STATE.selfRating <= 3 && STATE.retryCount === 0) {
+          screenRetryOption();
+        } else {
+          screenStamp();
+        }
+      };
+      render();
+    }
+
+    function screenRetryOption() {
+      showScreen(`
+        <div style="flex:1; display:flex; align-items:center; justify-content:center; width:100%;">
+          <div class="record-card">
+            <div style="font-size: clamp(70px, 10vh, 100px); line-height:1;">💪</div>
+            <h1 class="intro-title">한번 더 해볼까요?</h1>
+            <p class="intro-subtitle" style="margin-bottom:clamp(12px, 1.8vh, 18px);">
+              <span class="hi-pink"><strong>다시 해보면</strong></span> 더 잘할 수 있어요
+            </p>
+            <div style="background:#FFFBEB; border:3px solid #FCD34D; border-radius:18px; padding:clamp(14px, 2vh, 18px); margin-bottom:clamp(14px, 2vh, 20px);">
+              <p style="font-family:var(--font-display); color:#78350F; font-size: clamp(24px, 3vh, 30px); line-height:1.5;">
+                처음에는 어려워도 괜찮아요<br/>
+                다시 해보면 더 잘할 수 있어요
+              </p>
+            </div>
+            <div style="display:flex; gap:10px; flex-direction:column;">
+              <button class="btn-main" onclick="retryActivities()">다시 도전할래요</button>
+              <button class="btn-secondary" onclick="screenStamp()">아니요, 끝낼래요</button>
+            </div>
+          </div>
+        </div>
+      `);
+      autoReadScreen('한번 더 해볼까요? 다시 해보면 더 잘할 수 있어요. 처음에는 어려워도 괜찮아요.');
+    }
+
+    function retryActivities() {
+      playSfx('click');
+      STATE.retryCount++;
+      STATE.scores = { a1: 0, a2: 0, a3: 0, a4: 0 };
+      screenActivity1();
+    }
+
+    // ================================================
+    //  최종 임명장
+    // ================================================
+    function screenStamp() {
+      fireConfetti();
+      playSfx('success');
+      showScreen(`
+        <div style="flex:1; display:flex; align-items:center; justify-content:center; width:100%;">
+          <div class="stamp-card">
+            <div style="font-size: clamp(60px, 9vh, 90px); line-height:1;">🏆</div>
+            <h1 class="intro-title" style="margin: clamp(6px, 1vh, 12px) 0;">분류 마스터!</h1>
+            <p class="intro-subtitle" style="margin-bottom:clamp(10px, 1.5vh, 16px);">
+              <span class="text-pink"><strong>${STATE.studentName}</strong></span> 친구가<br/>
+              <span class="hi-yellow"><strong>멋지게</strong></span> 마쳤어요!
+            </p>
+            <div style="background:linear-gradient(180deg, #F0F9FF, #FAF5FF); border:3px solid #BAE6FD; border-radius:18px; padding:clamp(12px, 1.8vh, 18px); margin-bottom:clamp(14px, 2vh, 20px); text-align:left;">
+              <div style="font-family:var(--font-display); font-size: clamp(24px, 2.9vh, 30px); color:#0C4A6E; margin-bottom:clamp(8px, 1.2vh, 12px); text-align:center;">
+                📊 학습 결과
+              </div>
+              <div style="font-family:var(--font-body); font-size: clamp(20px, 2.5vh, 25px); color:var(--c-text); line-height:1.7;">
+                학용품: <strong class="text-orange">${STATE.scores.a1}점</strong> ·
+                동물: <strong class="text-pink">${STATE.scores.a2}점</strong><br/>
+                기준 찾기: <strong class="text-green">${STATE.scores.a3}점</strong><br/>
+                자유 분류: <strong class="text-purple">${STATE.scores.a4}회</strong><br/>
+                자기평가: <strong style="color:#F59E0B;">${'⭐'.repeat(STATE.selfRating)}</strong>
+              </div>
+            </div>
+            <button class="btn-main" onclick="downloadStamp()">💾 임명장 저장</button>
+            <button class="btn-secondary" style="margin-top:8px;" onclick="location.reload()">🏠 처음으로</button>
+          </div>
+        </div>
+      `);
+      autoReadScreen(`${STATE.studentName} 친구! 분류 마스터가 되었어요. 정말 멋지게 마쳤어요!`);
+    }
+
+    function downloadStamp() {
+      playSfx('click');
+      const canvas = document.createElement('canvas');
+      canvas.width = 600; canvas.height = 600;
+      const ctx = canvas.getContext('2d');
+      const grad = ctx.createLinearGradient(0, 0, 0, 600);
+      grad.addColorStop(0, '#FFFBEB'); grad.addColorStop(1, '#FEF3C7');
+      ctx.fillStyle = grad; ctx.fillRect(0, 0, 600, 600);
+      ctx.strokeStyle = '#6366F1'; ctx.lineWidth = 12;
+      ctx.strokeRect(20, 20, 560, 560);
+      ctx.strokeStyle = '#FBBF24'; ctx.lineWidth = 4;
+      ctx.strokeRect(35, 35, 530, 530);
+      ctx.strokeStyle = '#6366F1'; ctx.lineWidth = 18;
+      ctx.beginPath(); ctx.arc(300, 280, 200, 0, Math.PI * 2); ctx.stroke();
+      ctx.fillStyle = '#6366F1'; ctx.textAlign = 'center';
+      ctx.font = 'bold 48px sans-serif';
+      ctx.fillText('🏆 임명장 🏆', 300, 130);
+      ctx.font = 'bold 32px sans-serif';
+      ctx.fillText('분류 탐구 마스터', 300, 240);
+      ctx.fillStyle = '#1E293B';
+      ctx.font = 'bold 36px sans-serif';
+      ctx.fillText(STATE.studentName, 300, 310);
+      ctx.font = '20px sans-serif'; ctx.fillStyle = '#64748B';
+      ctx.fillText('위 학생은 분류하기 활동을', 300, 360);
+      ctx.fillText('멋지게 완수하였기에', 300, 390);
+      ctx.fillText('이 임명장을 드립니다.', 300, 420);
+      ctx.font = '60px sans-serif';
+      ctx.fillText('🌟', 300, 480);
+      const now = new Date();
+      ctx.font = '18px sans-serif'; ctx.fillStyle = '#94A3B8';
+      ctx.fillText(`${now.getFullYear()}년 ${now.getMonth() + 1}월 ${now.getDate()}일`, 300, 540);
+      const link = document.createElement('a');
+      link.download = `분류박물관_${STATE.studentName}_임명장.png`;
+      link.href = canvas.toDataURL();
+      link.click();
+    }
+
+    // ================================================
+    //  앱 시작
+    // ================================================
+    (async function() {
+      document.getElementById('app').innerHTML = `
+        <div class="screen" style="align-items:center; justify-content:center;">
+          <div style="text-align:center;">
+            <div style="font-size: clamp(72px, 10.3vh, 108px); animation: spin 2s linear infinite; display:inline-block; line-height:1;">🔍</div>
+            <div style="font-family:var(--font-display); font-size: clamp(43px, 5.2vh, 55px); color:var(--c-primary-dark); margin-top:16px;">
+              🌈 분류 박물관 준비 중...
+            </div>
+            <div style="font-family:var(--font-body); font-size: clamp(30px, 3.3vh, 36px); color:var(--c-text-light); margin-top:8px;">
+              ✨ 잠시만 기다려 주세요 ✨
+            </div>
+          </div>
+        </div>
+      `;
+      try {
+        const res = await gasGet('getAllData');
+        if (!res.success) {
+          showLoadError(res.error || '알 수 없는 오류');
+          return;
+        }
+        STATE.data = res.data;
+        screenIntro();
+      } catch (err) {
+        showLoadError(err.message || err.toString());
+      }
+    })();
+
+    function showLoadError(msg) {
+      document.getElementById('app').innerHTML = `
+        <div class="screen" style="align-items:center; justify-content:center;">
+          <div class="record-card">
+            <div style="font-size:100px; line-height:1;">😢</div>
+            <h1 class="intro-title">데이터를 불러올 수 없어요!</h1>
+            <p class="intro-subtitle">
+              선생님께 알려주세요! 🙋<br/>
+              구글 시트 연결을 확인해야 해요 🔗
+            </p>
+            <div style="background:#FEF2F2; border:3px solid #FECACA; border-radius:14px; padding:14px; font-family:var(--font-body); font-size: clamp(31px, 3.4vh, 32px); color:#991B1B; margin-bottom:22px; word-break:break-all; text-align:left;">
+              ${msg}
+            </div>
+            <button class="btn-main" onclick="location.reload()">🔄 다시 시도하기</button>
+          </div>
+        </div>
+      `;
+    }
+  </script>
+</body>
+</html>
