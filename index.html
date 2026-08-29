@@ -1455,14 +1455,35 @@
     // ================================================
     //  GAS 통신 함수 (CORS 대응)
     // ================================================
+    /* 다른 주소(깃허브 등)에서 열려도 막히지 않는 통로 */
+    function gasJsonp(url, timeoutMs) {
+      return new Promise(function (resolve) {
+        if (!url) { resolve(null); return; }
+        var cb = '__cbCb' + Date.now() + '_' + Math.floor(Math.random() * 1e6);
+        var s = document.createElement('script');
+        var done = false;
+        function cleanup() {
+          try { delete window[cb]; } catch (e) { window[cb] = undefined; }
+          if (s.parentNode) s.parentNode.removeChild(s);
+        }
+        window[cb] = function (d) { if (done) return; done = true; cleanup(); resolve(d); };
+        s.onerror = function () { if (done) return; done = true; cleanup(); resolve(null); };
+        setTimeout(function () { if (done) return; done = true; cleanup(); resolve(null); }, timeoutMs || 12000);
+        s.src = url + (url.indexOf('?') < 0 ? '?' : '&') + 'callback=' + cb;
+        document.body.appendChild(s);
+      });
+    }
+
     function gasGet(action) {
       if(!GAS_URL){
         if(action==='getAllData') return Promise.resolve({ success:true, data:DEMO_DATA });
         return Promise.resolve({ success:true });
       }
-      // GET은 CORS OK (no-cors 안 써도 됨)
-      return fetch(GAS_URL + '?action=' + action)
-        .then(r => r.json());
+      // 막히지 않는 통로로 먼저 요청하고, 안 되면 예전 방식으로 재시도합니다.
+      return gasJsonp(GAS_URL + '?action=' + action).then(function (j) {
+        if (j) return j;
+        return fetch(GAS_URL + '?action=' + action).then(r => r.json());
+      });
     }
 
     function gasPost(payload) {
